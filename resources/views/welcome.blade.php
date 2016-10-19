@@ -13,5 +13,8 @@
             </div>
         </div>
     </div>
+    @if(Auth::check())
+   <h5 class="text-center"> hi you logged in successfully</h5>
+    @endif
 </div>
 @endsection
