@@ -18,3 +18,8 @@ Route::get('/', function () {
 Route::auth();
 
 Route::get('/home', 'HomeController@index');
+Route::get('/addproduct',function(){
+	return view('events.add_product');
+});
+Route::post('create_product','EventController@create');
+Route::get('show','EventController@show_products');

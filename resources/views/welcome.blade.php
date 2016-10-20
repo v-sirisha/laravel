@@ -15,6 +15,8 @@
     </div>
     @if(Auth::check())
    <h5 class="text-center"> hi you logged in successfully</h5>
+   <a href="{{url('/addproduct')}}">create</a>
+   <a href="{{url('/show')}}">show</a>
     @endif
 </div>
 @endsection
