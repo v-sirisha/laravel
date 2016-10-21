@@ -23,3 +23,6 @@ Route::get('/addproduct',function(){
 });
 Route::post('create_product','EventController@create');
 Route::get('show','EventController@show_products');
+Route::get('404',function(){
+	return view('404');
+});
