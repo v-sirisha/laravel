@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Create_Product extends Model
 {
     protected $table = 'products';
-    protected $fillable = ['productid','name','product_description','quantity'];
+    protected $fillable = ['productid','name','product_description','quantity','image'];
 
     /* Relationship b/w users and products */
 

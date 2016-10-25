@@ -23,6 +23,11 @@ Route::get('/addproduct',function(){
 });
 Route::post('create_product','EventController@create');
 Route::get('show','EventController@show_products');
+Route::get('getprod','EventController@getRecords');
+Route::get('/detail/{id}', 'EventController@product_details');
+Route::get('/checkout',function(){
+	return view('checkout');
+});
 Route::get('404',function(){
 	return view('404');
 });
