@@ -273,6 +273,13 @@ class ComposerStaticInit51c194572ba45f21c50c0d95bf7336ac
                 0 => __DIR__ . '/..' . '/jakub-onderka/php-console-color/src',
             ),
         ),
+        'G' => 
+        array (
+            'Gloudemans\\Shoppingcart' => 
+            array (
+                0 => __DIR__ . '/..' . '/gloudemans/shoppingcart/src',
+            ),
+        ),
         'D' => 
         array (
             'Doctrine\\Common\\Inflector\\' => 
@@ -761,6 +768,18 @@ class ComposerStaticInit51c194572ba45f21c50c0d95bf7336ac
         'File_Iterator' => __DIR__ . '/..' . '/phpunit/php-file-iterator/src/Iterator.php',
         'File_Iterator_Facade' => __DIR__ . '/..' . '/phpunit/php-file-iterator/src/Facade.php',
         'File_Iterator_Factory' => __DIR__ . '/..' . '/phpunit/php-file-iterator/src/Factory.php',
+        'Gloudemans\\Shoppingcart\\Cart' => __DIR__ . '/..' . '/gloudemans/shoppingcart/src/Gloudemans/Shoppingcart/Cart.php',
+        'Gloudemans\\Shoppingcart\\CartCollection' => __DIR__ . '/..' . '/gloudemans/shoppingcart/src/Gloudemans/Shoppingcart/CartCollection.php',
+        'Gloudemans\\Shoppingcart\\CartRowCollection' => __DIR__ . '/..' . '/gloudemans/shoppingcart/src/Gloudemans/Shoppingcart/CartRowCollection.php',
+        'Gloudemans\\Shoppingcart\\CartRowOptionsCollection' => __DIR__ . '/..' . '/gloudemans/shoppingcart/src/Gloudemans/Shoppingcart/CartRowOptionsCollection.php',
+        'Gloudemans\\Shoppingcart\\Exceptions\\ShoppingcartInstanceException' => __DIR__ . '/..' . '/gloudemans/shoppingcart/src/Gloudemans/Shoppingcart/Exceptions/ShoppingcartInstanceException.php',
+        'Gloudemans\\Shoppingcart\\Exceptions\\ShoppingcartInvalidItemException' => __DIR__ . '/..' . '/gloudemans/shoppingcart/src/Gloudemans/Shoppingcart/Exceptions/ShoppingcartInvalidItemException.php',
+        'Gloudemans\\Shoppingcart\\Exceptions\\ShoppingcartInvalidPriceException' => __DIR__ . '/..' . '/gloudemans/shoppingcart/src/Gloudemans/Shoppingcart/Exceptions/ShoppingcartInvalidPriceException.php',
+        'Gloudemans\\Shoppingcart\\Exceptions\\ShoppingcartInvalidQtyException' => __DIR__ . '/..' . '/gloudemans/shoppingcart/src/Gloudemans/Shoppingcart/Exceptions/ShoppingcartInvalidQtyException.php',
+        'Gloudemans\\Shoppingcart\\Exceptions\\ShoppingcartInvalidRowIDException' => __DIR__ . '/..' . '/gloudemans/shoppingcart/src/Gloudemans/Shoppingcart/Exceptions/ShoppingcartInvalidRowIDException.php',
+        'Gloudemans\\Shoppingcart\\Exceptions\\ShoppingcartUnknownModelException' => __DIR__ . '/..' . '/gloudemans/shoppingcart/src/Gloudemans/Shoppingcart/Exceptions/ShoppingcartUnknownModelException.php',
+        'Gloudemans\\Shoppingcart\\Facades\\Cart' => __DIR__ . '/..' . '/gloudemans/shoppingcart/src/Gloudemans/Shoppingcart/Facades/Cart.php',
+        'Gloudemans\\Shoppingcart\\ShoppingcartServiceProvider' => __DIR__ . '/..' . '/gloudemans/shoppingcart/src/Gloudemans/Shoppingcart/ShoppingcartServiceProvider.php',
         'GuzzleHttp\\Psr7\\AppendStream' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/AppendStream.php',
         'GuzzleHttp\\Psr7\\BufferStream' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/BufferStream.php',
         'GuzzleHttp\\Psr7\\CachingStream' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/CachingStream.php',

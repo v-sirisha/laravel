@@ -7,6 +7,8 @@ use Auth;
 use Image;
 use App\User;
 use App\Models\Create_Product;
+use Cart;
+use App\Http\Controllers\CartController;
 
 use App\Http\Requests;
 
@@ -25,8 +27,10 @@ class EventController extends Controller
         return redirect('/');
     }
     public function show_products(){
-    	$productsinfo = Create_Product::all();
-    	return view('events.show_products',compact('productsinfo'));
+    	$productsinfo = $this->getRecords();
+        $cart = new CartController();
+        $cartCount = $cart->getcartCount();
+    	return view('events.show_products',compact('productsinfo'))->with('cartCount',$cartCount);
     }
     public function getRecords(){
         $records = Create_Product::all();
@@ -43,5 +47,9 @@ class EventController extends Controller
         if (!is_null($oldImage))
             File::delete($image_path . '/' . $oldImage);
         return $image_name;
+    }
+    public function checkout(){
+        $cart = $this->getRecords();
+        return view('checkout',compact('cart'))
     }
 }

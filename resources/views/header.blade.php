@@ -97,8 +97,8 @@
                         <span class="sr-only">Toggle search</span>
                         <i class="fa fa-search"></i>
                     </button>
-                    <a class="btn btn-default navbar-toggle" href="basket.html">
-                        <i class="fa fa-shopping-cart"></i>  <span class="hidden-xs">3 items in cart</span>
+                    <a class="btn btn-default navbar-toggle" href="{{url('cartview')}}">
+                        <i class="fa fa-shopping-cart"></i>  <span class="hidden-xs cartCount">{{$cartCount}} items in cart</span>
                     </a>
                 </div>
             </div>
@@ -346,7 +346,7 @@
             <div class="navbar-buttons">
 
                 <div class="navbar-collapse collapse right" id="basket-overview">
-                    <a href="basket.html" class="btn btn-primary navbar-btn"><i class="fa fa-shopping-cart"></i><span class="hidden-sm">3 items in cart</span></a>
+                    <a href="{{url('cartview')}}" class="btn btn-primary navbar-btn"><i class="fa fa-shopping-cart"></i><span class="hidden-sm cartCount">{{$cartCount}} items in cart</span></a>
                 </div>
                 <!--/.nav-collapse -->
 

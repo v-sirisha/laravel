@@ -44,7 +44,10 @@
     <header>
         @include('header')
     </header>
-    @yield('content')
+    <div class="container">
+         @yield('content')
+    </div>
+   
     <footer>
         @include('footer')
     </footer>

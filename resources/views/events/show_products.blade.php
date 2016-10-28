@@ -53,11 +53,8 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="row products">
-
-                    
-                </div>
+                
+                <div class="row products"></div>
 
                 <div class="pages">
 
@@ -95,6 +92,21 @@
 	$(document).ready(function(){
 		getProducts();
 	});
+    $(document).on('click','.addToCart',function(){
+        //var url = $(this).closest('.addform').attr('action');
+        var url = $(this).attr('data-href');
+        $.ajax({
+            type:'get',
+            url:url,
+            success:function(res){
+                $('.cartCount').text(res+' items in cart')
+            },
+            error:function(res){
+                console.log('error : '+res)
+            }
+
+        });
+    });
 	function getProducts(){
 		$.ajax({
 			type:'GET',
@@ -113,6 +125,15 @@
 		$.each(data, function (i,obj){
 			var img = "{{asset('images/productimages')}}"+"/"+obj['image'];
 			var prod_link = "{{url('/detail')}}"+"/"+obj['productid'];
+            var carturl = "{{url('cart')}}"+"/"+obj["productid"];
+
+            var addToCart = '<form method="POST" action="'+carturl+'" class="addform">';
+                addToCart+=    '<input type="hidden" name="_token" value="{{ csrf_token() }}">';
+                addToCart+=    '<button type="button" class="btn btn-primary add-to-cart">';
+                addToCart+=        '<i class="fa fa-shopping-cart"></i>';
+                addToCart+=       ' Add to cart';
+                addToCart+=  '</button>';
+                addToCart+='</form>';
 			var html  ='<div class="col-md-4 col-sm-6">';
 				html +='<div class="product">';
 				html +=' <div class="flip-container">';
@@ -140,7 +161,7 @@
 				html +="<p>"+obj['quantity']+"</p>";
 				html +='<p class="buttons">';
 				html +='<a href="'+prod_link+'" class="btn btn-default">View detail</a>';
-				html +='<a href="'+prod_link+'" class="btn btn-primary"><i class="fa fa-shopping-cart"></i>Add to cart</a>';
+				html +='<a data-href="'+carturl+'" class="btn btn-primary addToCart"><i class="fa fa-shopping-cart"></i>Add to cart</a>';
 				html +='</p>';
 
 				html +="</div></div></div>";

@@ -31,3 +31,10 @@ Route::get('/checkout',function(){
 Route::get('404',function(){
 	return view('404');
 });
+Route::get('cartview','CartController@showCart');
+Route::get('cart/destroy', 'CartController@destroy');
+Route::get('/cart/{productid}', 'CartController@cart');
+Route::get('/cart/remove/{productid}', 'CartController@itemRemove');
+Route::get('/cart/checkout', 'EventController@checkout');
+
+View::share('cartCount', Cart::count());
