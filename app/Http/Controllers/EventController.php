@@ -32,10 +32,6 @@ class EventController extends Controller
         $cartCount = $cart->getcartCount();
     	return view('events.show_products',compact('productsinfo'))->with('cartCount',$cartCount);
     }
-    public function getRecords(){
-        $records = Create_Product::all();
-        return $records;
-    }
     public function product_details($id){
         $record = Create_Product::where('productid',$id)->get();
         return view('events.details',compact('record'));
@@ -48,8 +44,14 @@ class EventController extends Controller
             File::delete($image_path . '/' . $oldImage);
         return $image_name;
     }
-    public function checkout(){
-        $cart = $this->getRecords();
-        return view('checkout',compact('cart'))
+    public function checkoutCart(){
+        $cartObj = new CartController();
+        $cart =$cartObj->getCart();
+        $total = Cart::total();
+        return view('checkout',compact('cart','total'));
+    }
+    public function getRecords(){
+        $records = Create_Product::all();
+        return $records;
     }
 }

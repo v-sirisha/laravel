@@ -246,7 +246,7 @@
                             <!-- order review start  -->
                             <div id="orderReviewSec" class="tab-pane">
                                 <div class="content ">
-                                    <div class="table-responsive">
+                                     <div class="table-responsive">
                                         <table class="table">
                                             <thead>
                                                 <tr>
@@ -254,47 +254,38 @@
                                                     <th>Quantity</th>
                                                     <th>Unit price</th>
                                                     <th>Discount</th>
-                                                    <th>Total</th>
+                                                    <th colspan="2">Total</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <a href="#">
-                                                            <img src="img/detailsquare.jpg" alt="White Blouse Armani">
-                                                        </a>
-                                                    </td>
-                                                    <td><a href="#">White Blouse Armani</a>
-                                                    </td>
-                                                    <td>2</td>
-                                                    <td>$123.00</td>
-                                                    <td>$0.00</td>
-                                                    <td>$246.00</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <a href="#">
-                                                            <img src="img/basketsquare.jpg" alt="Black Blouse Armani">
-                                                        </a>
-                                                    </td>
-                                                    <td><a href="#">Black Blouse Armani</a>
-                                                    </td>
-                                                    <td>1</td>
-                                                    <td>$200.00</td>
-                                                    <td>$0.00</td>
-                                                    <td>$200.00</td>
-                                                </tr>
+                                                @foreach($cart as $cartDetail)
+                                                    <tr id="{{$cartDetail->id}}">
+                                                        <td>
+                                                            <a href="#">
+                                                                <img src="{{asset('images/productimages').'/'.$cartDetail->image}}" alt="White Blouse Armani">
+                                                            </a>
+                                                        </td>
+                                                        <td><a href="#">{{$cartDetail->name}}</a>
+                                                        </td>
+                                                        <td>
+                                                            {{$cartDetail->qty}}
+                                                        </td>
+                                                        <td>{{$cartDetail->price}}</td>
+                                                        <td>0.00</td>
+                                                        <td>{{$cartDetail->subtotal}}</td>
+                                                        <td><a href="{{url('/cartview')}}" class="editItem"><i class="fa fa-pencil fa-fw"></i></a>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
                                             </tbody>
                                             <tfoot>
                                                 <tr>
                                                     <th colspan="5">Total</th>
-                                                    <th>$446.00</th>
+                                                    <th colspan="2">{{$total}}</th>
                                                 </tr>
                                             </tfoot>
                                         </table>
-
-                                    </div>
-                                    <!-- /.table-responsive -->
+                                    </div><!-- table responsive -->
                                 </div>
                                 <!-- /.content -->
 
@@ -318,7 +309,6 @@
                 <!-- /.col-md-9 -->
 
                 <div class="col-md-3">
-
                     <div class="box" id="order-summary">
                         <div class="box-header">
                             <h3>Order summary</h3>
@@ -330,26 +320,24 @@
                                 <tbody>
                                     <tr>
                                         <td>Order subtotal</td>
-                                        <th>$446.00</th>
+                                        <th>&#8377 {{$total}}</th>
                                     </tr>
                                     <tr>
                                         <td>Shipping and handling</td>
-                                        <th>$10.00</th>
+                                        <th>&#8377 10.00</th>
                                     </tr>
                                     <tr>
                                         <td>Tax</td>
-                                        <th>$0.00</th>
+                                        <th>&#8377 0.00</th>
                                     </tr>
                                     <tr class="total">
                                         <td>Total</td>
-                                        <th>$456.00</th>
+                                        <th>&#8377 {{$total}}</th>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
-
                     </div>
-
                 </div>
                 <!-- /.col-md-3 -->
 
@@ -387,7 +375,7 @@
                 }
             }
             var valid = textvalid && selectvalid && radiovalid;
-            if(valid){
+            if(!valid){
                 var href = $('.nav-pills .active').next().find('a').attr('data-href');
                 $('.nav-pills .active').next().find('a').attr('href',href);
                 $('.nav-pills .active').next().find('a').trigger('click');

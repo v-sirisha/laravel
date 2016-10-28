@@ -39,4 +39,8 @@ class CartController extends Controller
 		}
 		return $returnVal;
 	}
+	public function getCart(){
+		$cart = Cart::content();
+		return $cart;
+	}
 }

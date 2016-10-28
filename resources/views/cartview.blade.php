@@ -45,9 +45,9 @@
 	                                            <td>
 	                                                <input type="number" value="{{$cartDetail->qty}}" class="form-control">
 	                                            </td>
-	                                            <td>{{$cartDetail->price}}</td>
-	                                            <td>0.00</td>
-	                                            <td>{{$cartDetail->subtotal}}</td>
+	                                            <td>&#8377 {{$cartDetail->price}}</td>
+	                                            <td>&#8377 0.00</td>
+	                                            <td>&#8377 {{$cartDetail->subtotal}}</td>
 	                                            <td><a data-href="{{url('cart/remove').'/'.$cartDetail->id}}" class="removeItem"><i class="fa fa-trash-o"></i></a>
 	                                            </td>
 	                                        </tr>
@@ -56,7 +56,7 @@
                                     <tfoot>
                                         <tr>
                                             <th colspan="5">Total</th>
-                                            <th colspan="2">{{$total}}</th>
+                                            <th colspan="2">&#8377 {{$total}}</th>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -70,7 +70,7 @@
                                 </div>
                                 <div class="pull-right">
                                     <button class="btn btn-default"><i class="fa fa-refresh"></i> Update basket</button>
-                                    <a type="submit" class="btn btn-primary" href='{{url("checkout")}}'>Proceed to checkout <i class="fa fa-chevron-right"></i>
+                                    <a type="submit" class="btn btn-primary" href='{{url("/checkout_page")}}'>Proceed to checkout <i class="fa fa-chevron-right"></i>
                                     </a>
                                 </div>
                             </div>
@@ -189,19 +189,19 @@
                                 <tbody>
                                     <tr>
                                         <td>Order subtotal</td>
-                                        <th>{{$total}}</th>
+                                        <th>&#8377 {{$total}}</th>
                                     </tr>
                                     <tr>
                                         <td>Shipping and handling</td>
-                                        <th>$10.00</th>
+                                        <th>&#8377 10.00</th>
                                     </tr>
                                     <tr>
                                         <td>Tax</td>
-                                        <th>$0.00</th>
+                                        <th>&#8377 0.00</th>
                                     </tr>
                                     <tr class="total">
                                         <td>Total</td>
-                                        <th>$456.00</th>
+                                        <th>&#8377 {{$total}}</th>
                                     </tr>
                                 </tbody>
                             </table>
