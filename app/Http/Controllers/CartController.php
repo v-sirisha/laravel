@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use Cart;
+use Cache;
+use Carbon\Carbon;
 use App\Models\Create_Product;
 
 class CartController extends Controller
@@ -14,11 +16,15 @@ class CartController extends Controller
         $product = Create_Product::where('productid',$product_id)->get();
         Cart::add(array('id' => $product_id, 'name' => $product[0]->name, 'qty' => 1, 'price' => $product[0]->price,'image'=>$product[0]->image));
 	    $cart = $this->getcartCount();
+	    $cartItems = $this->getCart();
 		return $cart;
 	}
 	public function getcartCount(){
 		$cart = Cart::content();
-		return count($cart);
+		$count = count($cart);
+		if($count < 0)
+			$count = 0;
+		return $count;
 	}
 	public function showCart(){
 		$cart = Cart::content();
@@ -30,17 +36,40 @@ class CartController extends Controller
 	}
 	public function itemRemove($id){
 		$rowId = Cart::search(array('id' => $id));
-		
 		if($rowId == false)
 			$returnVal = false;
 		else{
 			Cart::remove($rowId[0]);
 			$returnVal = $id;
 		}
-		return $returnVal;
+		$count = $this->getcartCount();
+		$arr = ['id'=>$id,'count'=>$count,'$cart'=>$this->getCart()];
+		return $arr;
 	}
 	public function getCart(){
 		$cart = Cart::content();
 		return $cart;
 	}
+	public function updateCart($id,$qty){
+		$rowId = Cart::search(array('id' => $id));
+		Cart::update($rowId[0], $qty);
+		$returnval = Cart::get($rowId[0]);
+		if(!$returnval)
+			$returnval=['id'=>'deleted','productid'=>$id,'total' => Cart::total()];
+		else
+			$returnval = [$returnval,'total' => Cart::total()];
+		return $returnval;
+	}
+	/*
+	public function updateCart($id,$qty){
+		$rowId = Cart::search(array('id' => $id));
+		Cart::update($rowId[0], $qty);
+		$returnval = Cart::get($rowId[0]);
+		if(!$returnval)
+			$returnval=['id'=>'deleted','productid'=>$id,'$cart'=>$this->getCart()];
+		else
+			$returnval = [$returnval,'cart'=>$this->getCart()];
+		return $returnval;
+	}
+	*/
 }

@@ -16,13 +16,13 @@
                     <div class="box">
                         <h1>Checkout</h1>
                         <ul class="nav nav-pills nav-justified">
-                            <li class="active current"><a href="#addressSec" data-href="#addressSec" data-toggle="tab"><i class="fa fa-map-marker"></i><br>Address</a>
+                            <li class="active"><a href="#addressSec" data-href="#addressSec" data-toggle="tab" id="addrTab" data-visit="true"><i class="fa fa-map-marker"></i><br>Address</a>
                             </li>
-                            <li class="disabled"><a data-href="#deliverySection" data-toggle="tab"><i class="fa fa-truck"></i><br>Delivery Method</a>
+                            <li class="disabled"><a data-href="#deliverySection" data-toggle="tab" id="deliTab"><i class="fa fa-truck"></i><br>Delivery Method</a>
                             </li>
-                            <li class="disabled"><a data-href="#paymentSection" data-toggle="tab"><i class="fa fa-money"></i><br>Payment Method</a>
+                            <li class="disabled"><a data-href="#paymentSection" data-toggle="tab" id="payTab"><i class="fa fa-money"></i><br>Payment Method</a>
                             </li>
-                            <li class="disabled"><a data-href="#orderReviewSec" data-toggle="tab"><i class="fa fa-eye"></i><br>Order Review</a>
+                            <li class="disabled"><a data-href="#orderReviewSec" data-toggle="tab" id="ordTab"><i class="fa fa-eye"></i><br>Order Review</a>
                             </li>
                         </ul>
                         <div class="tab-content">
@@ -171,7 +171,7 @@
 
                                 <div class="box-footer">
                                     <div class="pull-left">
-                                        <a href="basket.html" class="btn btn-default"><i class="fa fa-chevron-left"></i>Back to Addresses</a>
+                                        <a href="#" data-id="addrTab" class="btn btn-default back"><i class="fa fa-chevron-left"></i>Back to Addresses</a>
                                     </div>
                                     <div class="pull-right">
                                         <button type="submit" class="btn btn-primary">Continue to Payment Method<i class="fa fa-chevron-right"></i>
@@ -233,7 +233,7 @@
 
                                 <div class="box-footer">
                                     <div class="pull-left">
-                                        <a href="basket.html" class="btn btn-default"><i class="fa fa-chevron-left"></i>Back to Shipping method</a>
+                                        <a href="#" data-id="deliTab" class="btn btn-default back"><i class="fa fa-chevron-left"></i>Back to Shipping method</a>
                                     </div>
                                     <div class="pull-right">
                                         <button type="submit" class="btn btn-primary">Continue to Order review<i class="fa fa-chevron-right"></i>
@@ -291,7 +291,7 @@
 
                                 <div class="box-footer">
                                     <div class="pull-left">
-                                        <a href="checkout3.html" class="btn btn-default"><i class="fa fa-chevron-left"></i>Back to Payment method</a>
+                                        <a href="#" data-id="payTab" class="btn btn-default back"><i class="fa fa-chevron-left"></i>Back to Payment method</a>
                                     </div>
                                     <div class="pull-right">
                                         <button type="submit" class="btn btn-primary">Place an order<i class="fa fa-chevron-right"></i>
@@ -351,10 +351,11 @@
 @stop
 @section('script')
     <script type="text/javascript">
-        $(document).on('click','.next',function(event){
+        $(document).on('click','.next',function(e){
             var textvalid = true;
             var selectvalid = true;
             var radiovalid = true;
+            var valid = true;
             var tab = $('.tab-pane.active');
             $('input', tab).each(function(){
                 if(!$(this).val()){
@@ -375,15 +376,29 @@
                 }
             }
             var valid = textvalid && selectvalid && radiovalid;
+            console.log('valid : '+valid)
             if(!valid){
                 var href = $('.nav-pills .active').next().find('a').attr('data-href');
                 $('.nav-pills .active').next().find('a').attr('href',href);
-                $('.nav-pills .active').next().find('a').trigger('click');
+                $('.nav-pills .active').next().find('a').attr('data-visit','true');
+                $('.nav-pills .active').next().find('a').trigger('click',['next']);
                 $('.tab-pane.active .btn-primary').addClass('next');
             }
             else{
-                console.log('calling else');
+                return false;
             }
+        });
+        $('.nav-pills a').on('click',function(event,data){
+           var param = data;
+           var visited = $(this).attr('data-visit');
+           if(param != 'next' && visited != 'true') {
+                event.stopPropagation();
+                return false;
+           }
+        });
+        $(document).on('click','.back',function(){
+            var id= $(this).attr('data-id');
+            $('#'+id).trigger('click',['next']);
         });
     </script>
 @stop

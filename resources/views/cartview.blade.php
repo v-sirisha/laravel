@@ -33,25 +33,29 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                    	@foreach($cart as $cartDetail)
-	                                        <tr id="{{$cartDetail->id}}">
-	                                            <td>
-	                                                <a href="#">
-	                                                    <img src="{{asset('images/productimages').'/'.$cartDetail->image}}" alt="White Blouse Armani">
-	                                                </a>
-	                                            </td>
-	                                            <td><a href="#">{{$cartDetail->name}}</a>
-	                                            </td>
-	                                            <td>
-	                                                <input type="number" value="{{$cartDetail->qty}}" class="form-control">
-	                                            </td>
-	                                            <td>&#8377 {{$cartDetail->price}}</td>
-	                                            <td>&#8377 0.00</td>
-	                                            <td>&#8377 {{$cartDetail->subtotal}}</td>
-	                                            <td><a data-href="{{url('cart/remove').'/'.$cartDetail->id}}" class="removeItem"><i class="fa fa-trash-o"></i></a>
-	                                            </td>
-	                                        </tr>
-                                        @endforeach
+                                        @if(isset($cart))
+                                        	@foreach($cart as $cartDetail)
+    	                                        <tr id="{{$cartDetail->id}}">
+    	                                            <td>
+    	                                                <a href="#">
+    	                                                    <img src="{{asset('images/productimages').'/'.$cartDetail->image}}" alt="White Blouse Armani">
+    	                                                </a>
+    	                                            </td>
+    	                                            <td><a href="#">{{$cartDetail->name}}</a>
+    	                                            </td>
+    	                                            <td>
+    	                                                <input type="number" value="{{$cartDetail->qty}}" class="form-control qty">
+    	                                            </td>
+    	                                            <td>&#8377 {{$cartDetail->price}}</td>
+    	                                            <td>&#8377 0.00</td>
+    	                                            <td class="subtotal{{$cartDetail->id}}">&#8377 {{$cartDetail->subtotal}}</td>
+    	                                            <td><a data-href="{{url('cart/remove').'/'.$cartDetail->id}}" class="removeItem"><i class="fa fa-trash-o"></i></a>
+    	                                            </td>
+    	                                        </tr>
+                                            @endforeach
+                                        @else
+                                            <tr><td>Your Cart is Empty</td></tr>
+                                        @endif
                                     </tbody>
                                     <tfoot>
                                         <tr>
@@ -247,8 +251,8 @@
 			success:function(res){
 				console.log('res : '+res)
 				if(res != false){
-					$('tr#'+res).remove();
-                    /*cart update*/
+					$('tr#'+res.id).remove();
+                    $('.cartCount').text(res.count+' items in cart')
 				}
 				else{
 
@@ -256,5 +260,27 @@
 			}
 		});
 	});
+    $(document).on('focusout','.qty',function(){
+        var qty = parseInt($(this).val());
+        var url = '{{url("cart/update")}}';
+        var id = $(this).closest('tr').attr('id');
+        var response;
+        $.ajax({
+            type:'get',
+            url: url + '/' +id+'/'+qty,
+            success:function(res){
+                console.log('success : '+JSON.stringify(res))
+                if(res.id == 'deleted'){
+                    $('tr#'+res.productid).remove();
+                }
+                else{
+                    $('.subtotal'+res.id).html('&#8377; '+res.subtotal);
+                }
+            }
+        });
+    });
+    function updatePage(res){
+
+    }
 </script>
 @stop

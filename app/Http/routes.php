@@ -33,5 +33,5 @@ Route::get('cartview','CartController@showCart');
 Route::get('cart/destroy', 'CartController@destroy');
 Route::get('/cart/{productid}', 'CartController@cart');
 Route::get('/cart/remove/{productid}', 'CartController@itemRemove');
-
+Route::get('/cart/update/{productid}/{quantity}', 'CartController@updateCart');
 View::share('cartCount', Cart::count());
