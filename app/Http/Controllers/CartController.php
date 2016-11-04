@@ -43,7 +43,7 @@ class CartController extends Controller
 			$returnVal = $id;
 		}
 		$count = $this->getcartCount();
-		$arr = ['id'=>$id,'count'=>$count,'$cart'=>$this->getCart()];
+		$arr = ['id'=>$id,'count'=>$count,'total' => Cart::total()];
 		return $arr;
 	}
 	public function getCart(){
@@ -55,21 +55,8 @@ class CartController extends Controller
 		Cart::update($rowId[0], $qty);
 		$returnval = Cart::get($rowId[0]);
 		if(!$returnval)
-			$returnval=['id'=>'deleted','productid'=>$id,'total' => Cart::total()];
-		else
-			$returnval = [$returnval,'total' => Cart::total()];
+			$returnval=['id'=>'deleted','productid'=>$id];
+		$returnval = [$returnval,'total' => Cart::total()];
 		return $returnval;
 	}
-	/*
-	public function updateCart($id,$qty){
-		$rowId = Cart::search(array('id' => $id));
-		Cart::update($rowId[0], $qty);
-		$returnval = Cart::get($rowId[0]);
-		if(!$returnval)
-			$returnval=['id'=>'deleted','productid'=>$id,'$cart'=>$this->getCart()];
-		else
-			$returnval = [$returnval,'cart'=>$this->getCart()];
-		return $returnval;
-	}
-	*/
 }

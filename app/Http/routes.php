@@ -22,16 +22,18 @@ Route::get('/addproduct',function(){
 	return view('events.add_product');
 });
 Route::post('create_product','EventController@create');
-Route::get('show','EventController@show_products');
-Route::get('getprod','EventController@getRecords');
+Route::get('show/{key}','EventController@show_products');
+Route::get('getprod/{val}','EventController@getRecords');
 Route::get('/detail/{id}', 'EventController@product_details');
 Route::get('/checkout_page','EventController@checkoutCart');
 Route::get('404',function(){
 	return view('404');
 });
+/* cart routes*/
 Route::get('cartview','CartController@showCart');
 Route::get('cart/destroy', 'CartController@destroy');
 Route::get('/cart/{productid}', 'CartController@cart');
 Route::get('/cart/remove/{productid}', 'CartController@itemRemove');
 Route::get('/cart/update/{productid}/{quantity}', 'CartController@updateCart');
+
 View::share('cartCount', Cart::count());

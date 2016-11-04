@@ -60,7 +60,7 @@
     <script type="text/javascript" src="{{asset('js/template/modernizr.js')}}"></script>
     <script type="text/javascript" src="{{asset('js/template/bootstrap-hover-dropdown.js')}}"></script>
     <script type="text/javascript" src="{{asset('js/template/owl.carousel.min.js')}}"></script>
-    <!-- <script type="text/javascript" src="{{asset('js/template/front.js')}}"></script>-->
+    <script type="text/javascript" src="{{asset('js/products.js')}}"></script>
     @yield('script')
 </body>
 </html>

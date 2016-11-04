@@ -26,12 +26,6 @@ class EventController extends Controller
     	Create_Product::create($productDetails)  ;
         return redirect('/');
     }
-    public function show_products(){
-    	$productsinfo = $this->getRecords();
-        $cart = new CartController();
-        $cartCount = $cart->getcartCount();
-    	return view('events.show_products',compact('productsinfo'))->with('cartCount',$cartCount);
-    }
     public function product_details($id){
         $record = Create_Product::where('productid',$id)->get();
         return view('events.details',compact('record'));
@@ -50,8 +44,18 @@ class EventController extends Controller
         $total = Cart::total();
         return view('checkout',compact('cart','total'));
     }
-    public function getRecords(){
-        $records = Create_Product::all();
+    public function getRecords($key){
+        
+        if($key == 'all'){
+            $records = Create_Product::get();
+         }
+        else{
+            $records = Create_Product::where('name','LIKE', '%'.$key.'%')->get();
+        } 
         return $records;
+    }
+    /*can use resource route */
+    public function show_products($key){
+        return view('events.show_products')->with('key',$key);
     }
 }

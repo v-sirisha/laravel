@@ -60,7 +60,7 @@
                                     <tfoot>
                                         <tr>
                                             <th colspan="5">Total</th>
-                                            <th colspan="2">&#8377 {{$total}}</th>
+                                            <th colspan="2" class="sub_total">&#8377 {{$total}}</th>
                                         </tr>
                                     </tfoot>
                                 </table>
@@ -193,19 +193,19 @@
                                 <tbody>
                                     <tr>
                                         <td>Order subtotal</td>
-                                        <th>&#8377 {{$total}}</th>
+                                        <th class="sub_total text-right" id="order_sub">&#8377 {{$total}}</th>
                                     </tr>
                                     <tr>
                                         <td>Shipping and handling</td>
-                                        <th>&#8377 10.00</th>
+                                        <th class="text-right">&#8377 0.00</th>
                                     </tr>
                                     <tr>
                                         <td>Tax</td>
-                                        <th>&#8377 0.00</th>
+                                        <th class="text-right">&#8377 0.00</th>
                                     </tr>
                                     <tr class="total">
                                         <td>Total</td>
-                                        <th>&#8377 {{$total}}</th>
+                                        <th class='text-right' id="order_total">&#8377 {{$total}}</th>
                                     </tr>
                                 </tbody>
                             </table>
@@ -244,18 +244,12 @@
 <script type="text/javascript">
 	$(document).on('click','.removeItem',function(){
 		var url = $(this).attr('data-href');
-		console.log('url : '+url)
 		$.ajax({
 			type:'get',
 			url:url,
 			success:function(res){
-				console.log('res : '+res)
 				if(res != false){
-					$('tr#'+res.id).remove();
-                    $('.cartCount').text(res.count+' items in cart')
-				}
-				else{
-
+                    updatePage(res,'delete');
 				}
 			}
 		});
@@ -269,17 +263,25 @@
             type:'get',
             url: url + '/' +id+'/'+qty,
             success:function(res){
-                console.log('success : '+JSON.stringify(res))
-                if(res.id == 'deleted'){
-                    $('tr#'+res.productid).remove();
-                }
-                else{
-                    $('.subtotal'+res.id).html('&#8377; '+res.subtotal);
-                }
+                updatePage(res,'update');
             }
         });
     });
-    function updatePage(res){
+    function updatePage(res,fn){
+        if(fn == 'update'){
+            if(res[0].id == 'deleted'){
+                $('tr#'+res[0].productid).remove();
+            }
+            else{
+                $('.subtotal'+res[0].id).html('&#8377; '+res[0].subtotal);
+            }
+        }
+        else if(fn == 'delete'){
+            $('tr#'+res.id).remove();
+            $('.cartCount').text(res.count+' items in cart');
+        }
+        $('#order_total').html('&#8377; '+res.total);
+        $('.sub_total').html('&#8377; '+res.total);
 
     }
 </script>

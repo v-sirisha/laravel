@@ -4,7 +4,6 @@
 @stop
 @section('content')
 <div id="all">
-
     <div id="content">
         <div class="container">
 
@@ -90,10 +89,9 @@
 @section('script')
 <script type="text/javascript">
 	$(document).ready(function(){
-		getProducts();
+		getProducts('{{$key}}');
 	});
     $(document).on('click','.addToCart',function(){
-        //var url = $(this).closest('.addform').attr('action');
         var url = $(this).attr('data-href');
         $.ajax({
             type:'get',
@@ -107,14 +105,17 @@
 
         });
     });
-	function getProducts(){
+	function getProducts(key){
 		$.ajax({
 			type:'GET',
-			url:'{{url("/getprod")}}',
+			url:'{{url("/getprod")}}'+'/'+key,
 			success:function(res){
-				if(res != null){
+				if(res.length !=0){
 					displayRecords(res);
-				}	
+				}
+                else if(res.length == 0){
+                    $('.products').append('<h4 class="text-center">NO PRODUCTS FOUND</h4>');
+                }	
 			},
 			error:function(res){
 				console.log('error : '+res);
