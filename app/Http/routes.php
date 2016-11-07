@@ -12,7 +12,7 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('events.show_products')->with('key','all');
 });
 
 Route::auth();
@@ -29,11 +29,14 @@ Route::get('/checkout_page','EventController@checkoutCart');
 Route::get('404',function(){
 	return view('404');
 });
+Route::get('contact',function(){
+	return view('contact');
+});
 /* cart routes*/
 Route::get('cartview','CartController@showCart');
 Route::get('cart/destroy', 'CartController@destroy');
 Route::get('/cart/{productid}', 'CartController@cart');
 Route::get('/cart/remove/{productid}', 'CartController@itemRemove');
 Route::get('/cart/update/{productid}/{quantity}', 'CartController@updateCart');
-
+Route::get('sendEmail','EventController@sendEmailReminder');
 View::share('cartCount', Cart::count());

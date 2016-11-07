@@ -58,4 +58,19 @@ class EventController extends Controller
     public function show_products($key){
         return view('events.show_products')->with('key',$key);
     }
+    public function sendEmailReminder(Request $request)
+    { 
+       
+        $data = $request->all();
+        \Mail::send('events.emails',$data, function ($message) use ($data)
+        {
+            $message->from($data['email'], $data['firstName']);
+            $message->to('vangarasirishait@gmail.com')->subject($data['subject']);
+        });
+        \Mail::send('events.emails',['firstName'=>$data['firstName'],'ack'=>'true'], function ($message) use ($data)
+        {
+            $message->from(env('MAIL_USERNAME'),env('MAIL_NAME'));
+            $message->to($data['email'])->subject($data['subject']);            
+        });
+    }
 }

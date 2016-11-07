@@ -21,7 +21,7 @@
                         </ul>
                     </li>
                     @endif
-                    <li><a href="contact.html">Contact</a>
+                    <li><a href="{{ url('/contact') }}">Contact</a>
                     </li>
                     <li><a href="#">Recently viewed</a>
                     </li>
@@ -107,7 +107,7 @@
             <div class="navbar-collapse collapse" id="navigation">
 
                 <ul class="nav navbar-nav navbar-left">
-                    <li class="active"><a href="{{ url('/home') }}">Home</a>
+                    <li class="active"><a href="{{ url('/') }}">Home</a>
                     </li>
                     <li class="dropdown yamm-fw">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-delay="200">Men <b class="caret"></b></a>

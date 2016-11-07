@@ -1,3 +1,6 @@
 $(document).on('click','#searchBtn',function(){
-    location.href=$(this).attr('data-link') + '/' +$('#searchTerm').val();
+	var searchTerm = $('#searchTerm').val();
+	if(searchTerm == "")
+		searchTerm = "all";
+    location.href=$(this).attr('data-link') + '/' + searchTerm;
 });
