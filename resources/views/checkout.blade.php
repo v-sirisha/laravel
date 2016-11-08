@@ -63,7 +63,7 @@
                                     <div class="row">
                                         <div class="col-sm-6 col-md-3">
                                             <div class="form-group">
-                                                <label for="city">Company</label>
+                                                <label for="city">City</label>
                                                 <input type="text" class="form-control" id="city">
                                             </div>
                                         </div>
@@ -280,7 +280,7 @@
                                             </tbody>
                                             <tfoot>
                                                 <tr>
-                                                    <th colspan="5">Total</th>
+                                                    <th colspan="5">&#8377; Total</th>
                                                     <th colspan="2">{{$total}}</th>
                                                 </tr>
                                             </tfoot>
@@ -294,7 +294,7 @@
                                         <a href="#" data-id="payTab" class="btn btn-default back"><i class="fa fa-chevron-left"></i>Back to Payment method</a>
                                     </div>
                                     <div class="pull-right">
-                                        <button type="submit" class="btn btn-primary">Place an order<i class="fa fa-chevron-right"></i>
+                                        <button type="submit" class="btn btn-primary" id="placeOrder">Place an order<i class="fa fa-chevron-right"></i>
                                         </button>
                                     </div>
                                 </div>
@@ -352,40 +352,75 @@
 @section('script')
     <script type="text/javascript">
         $(document).on('click','.next',function(e){
-            var textvalid = true;
-            var selectvalid = true;
-            var radiovalid = true;
-            var valid = true;
-            var tab = $('.tab-pane.active');
-            $('input', tab).each(function(){
-                if(!$(this).val()){
-                    textvalid = false;
-                } 
-            });
-            $('select', tab).each(function(){
-                if(!$(this).val()){
-                    selectvalid = false;
-                } 
-            });
-            if($('.tab-pane.active').find(':radio').length > 0){
-                if ($('.tab-pane.active:has(:radio:checked)').length>0) {
-                   console.log('calling radio : if')
+            var id = $(this).attr('id');
+            if(id == 'placeOrder'){
+                var OrderArray = {};
+                $('#addressSec input').each(function(){
+                    var id = $(this).attr('id');
+                    var val = $(this).val();
+                    OrderArray[id] = val;
+                });
+                var delivery = $('input[type=radio][name="delivery"]:checked').val();
+                var payment = $('input[type=radio][name="payment"]:checked').val();
+
+                OrderArray['deliveryMethod'] = $('input[type=radio][name="delivery"]:checked').val();
+                OrderArray['payment'] = $('input[type=radio][name="payment"]:checked').val();
+
+                console.log('delivery :'+delivery )
+                console.log('payment :'+payment )
+                console.log('array : '+JSON.stringify(OrderArray));
+
+                if(OrderArray.payment == 'payment3'){
+                    $.ajax({
+                        type:'get',
+                        dataType:'json',
+                        data:{'data':OrderArray},
+                        contentType: 'application/json',
+                        url:'{{url("order")}}',
+                        success:function(res){
+
+                        }
+                    });
                 }
-                else{
-                    radiovalid = false;
-                }
-            }
-            var valid = textvalid && selectvalid && radiovalid;
-            console.log('valid : '+valid)
-            if(!valid){
-                var href = $('.nav-pills .active').next().find('a').attr('data-href');
-                $('.nav-pills .active').next().find('a').attr('href',href);
-                $('.nav-pills .active').next().find('a').attr('data-visit','true');
-                $('.nav-pills .active').next().find('a').trigger('click',['next']);
-                $('.tab-pane.active .btn-primary').addClass('next');
+
+
             }
             else{
-                return false;
+                var textvalid = true;
+                var selectvalid = true;
+                var radiovalid = true;
+                var valid = true;
+                var tab = $('.tab-pane.active');
+                $('input', tab).each(function(){
+                    if(!$(this).val()){
+                        textvalid = false;
+                    } 
+                });
+                $('select', tab).each(function(){
+                    if(!$(this).val()){
+                        selectvalid = false;
+                    } 
+                });
+                if($('.tab-pane.active').find(':radio').length > 0){
+                    if ($('.tab-pane.active:has(:radio:checked)').length>0) {
+                       console.log('calling radio : if')
+                    }
+                    else{
+                        radiovalid = false;
+                    }
+                }
+                var valid = textvalid && selectvalid && radiovalid;
+                console.log('valid : '+valid)
+                if(valid){
+                    var href = $('.nav-pills .active').next().find('a').attr('data-href');
+                    $('.nav-pills .active').next().find('a').attr('href',href);
+                    $('.nav-pills .active').next().find('a').attr('data-visit','true');
+                    $('.nav-pills .active').next().find('a').trigger('click',['next']);
+                    $('.tab-pane.active .btn-primary').addClass('next');
+                }
+                else{
+                    return false;
+                }
             }
         });
         $('.nav-pills a').on('click',function(event,data){

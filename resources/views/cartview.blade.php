@@ -70,7 +70,7 @@
 
                             <div class="box-footer">
                                 <div class="pull-left">
-                                    <a href="{{url('show')}}" class="btn btn-default"><i class="fa fa-chevron-left"></i> Continue shopping</a>
+                                    <a href="{{url('show/all')}}" class="btn btn-default"><i class="fa fa-chevron-left"></i> Continue shopping</a>
                                 </div>
                                 <div class="pull-right">
                                     <button class="btn btn-default"><i class="fa fa-refresh"></i> Update basket</button>

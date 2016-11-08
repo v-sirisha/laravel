@@ -52,7 +52,7 @@
                         </div>
                     </div>
                 </div>
-                
+                <a href="{{url('/addproduct')}}">create</a>
                 <div class="row products"></div>
 
                 <div class="pages">
@@ -125,8 +125,8 @@
 	function displayRecords(data){
 		$.each(data, function (i,obj){
 			var img = "{{asset('images/productimages')}}"+"/"+obj['image'];
-			var prod_link = "{{url('/detail')}}"+"/"+obj['productid'];
-            var carturl = "{{url('cart')}}"+"/"+obj["productid"];
+			var prod_link = "{{url('/detail')}}"+"/"+obj['id'];
+            var carturl = "{{url('cart')}}"+"/"+obj["id"];
 
             var addToCart = '<form method="POST" action="'+carturl+'" class="addform">';
                 addToCart+=    '<input type="hidden" name="_token" value="{{ csrf_token() }}">';

@@ -13,7 +13,7 @@ class CartController extends Controller
 {
     public function cart($id) {
         $product_id =$id;
-        $product = Create_Product::where('productid',$product_id)->get();
+        $product = Create_Product::where('id',$product_id)->get();
         Cart::add(array('id' => $product_id, 'name' => $product[0]->name, 'qty' => 1, 'price' => $product[0]->price,'image'=>$product[0]->image));
 	    $cart = $this->getcartCount();
 	    $cartItems = $this->getCart();
