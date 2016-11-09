@@ -297,10 +297,14 @@ class ComposerStaticInit51c194572ba45f21c50c0d95bf7336ac
     );
 
     public static $classMap = array (
+        'CreateGuestTable' => __DIR__ . '/../..' . '/database/migrations/2016_11_8_120906_create_guest_table.php',
         'CreateItemsTable' => __DIR__ . '/../..' . '/database/migrations/2016_10_19_123648_create_items_table.php',
-        'CreateOrdersTable' => __DIR__ . '/../..' . '/database/migrations/2016_11_08_081158_create_orders_table.php',
+        'CreateOrdersTable' => __DIR__ . '/../..' . '/database/migrations/2016_11_8_120906_create_orders_table.php',
         'CreatePasswordResetsTable' => __DIR__ . '/../..' . '/database/migrations/2014_10_12_100000_create_password_resets_table.php',
         'CreateProductsTable' => __DIR__ . '/../..' . '/database/migrations/2016_10_19_120906_create_products_table.php',
+        'CreatePurchaseItemsTable' => __DIR__ . '/../..' . '/database/migrations/2016_11_7_120906_create_purchase_items_table.php',
+        'CreatePurchaseTable' => __DIR__ . '/../..' . '/database/migrations/2016_11_9_120906_create_purchase_table.php',
+        'CreateRoleUserTable' => __DIR__ . '/../..' . '/database/migrations/2016_11_09_091302_create_role_user_table.php',
         'CreateUsersTable' => __DIR__ . '/../..' . '/database/migrations/2014_10_12_000000_create_users_table.php',
         'DatabaseSeeder' => __DIR__ . '/../..' . '/database/seeds/DatabaseSeeder.php',
         'File_Iterator' => __DIR__ . '/..' . '/phpunit/php-file-iterator/src/Iterator.php',
@@ -770,6 +774,7 @@ class ComposerStaticInit51c194572ba45f21c50c0d95bf7336ac
         'PHP_Token_XOR_EQUAL' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
         'PHP_Token_YIELD' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
         'PHP_Token_YIELD_FROM' => __DIR__ . '/..' . '/phpunit/php-token-stream/src/Token.php',
+        'Roles' => __DIR__ . '/../..' . '/database/migrations/2016_11_09_085957_roles.php',
         'SebastianBergmann\\Comparator\\ArrayComparator' => __DIR__ . '/..' . '/sebastian/comparator/src/ArrayComparator.php',
         'SebastianBergmann\\Comparator\\Comparator' => __DIR__ . '/..' . '/sebastian/comparator/src/Comparator.php',
         'SebastianBergmann\\Comparator\\ComparisonFailure' => __DIR__ . '/..' . '/sebastian/comparator/src/ComparisonFailure.php',

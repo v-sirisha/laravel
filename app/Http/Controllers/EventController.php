@@ -76,14 +76,19 @@ class EventController extends Controller
         $res['user_id'] = $responsedata->id;
         $purchaserow = Purchase::create($res);
         foreach ($cart as $product) {
-            $item['id'] = $purchaserow->id;
+            $item['transaction_id'] = $purchaserow->id;
             $item['product_id'] = $product->id;
             $item['total_price'] = $product->subtotal;
             $item['quantity'] = $product->qty;
-            purchaseItems::create($item)  ;
+            $itemres = purchaseItems::create($item)  ;
         }
+
         $message = "Hi " . $responsedata->name . "! Here's to notify, that your order is submitted successfully ";
         $this->sendSMS($responsedata->mobile, $message);
+        if($purchaserow->id)
+            return array('txnId'=>$purchaserow->id);
+        else
+            return "fail";
     }
     public function sendEmailReminder(Request $request)
     { 

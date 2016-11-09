@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateGuestTable extends Migration
+class CreateRolesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,12 +12,9 @@ class CreateGuestTable extends Migration
      */
     public function up()
     {
-        Schema::create('guests', function (Blueprint $table) {
+        Schema::create('roles', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->string('address');
-            $table->timestamps();
+            $table->string('role');
         });
     }
 
@@ -28,6 +25,6 @@ class CreateGuestTable extends Migration
      */
     public function down()
     {
-        Schema::drop('guest');
+        Schema::drop('roles');
     }
 }

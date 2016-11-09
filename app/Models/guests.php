@@ -11,7 +11,8 @@ class guests extends Model
      *
      * @var array
      */
+    protected $table = 'guests';
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password','address',
     ];
 }

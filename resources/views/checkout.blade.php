@@ -378,7 +378,7 @@
                         contentType: 'application/json',
                         url:'{{url("order")}}',
                         success:function(res){
-
+                            console.log('res : '+res)
                         }
                     });
                 }
