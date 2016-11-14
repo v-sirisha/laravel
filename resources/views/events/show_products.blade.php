@@ -85,6 +85,7 @@
         </div>
         <!-- /.container -->
     </div>
+</div>
 @stop
 @section('script')
 <script type="text/javascript">
