@@ -360,6 +360,11 @@
                     var val = $(this).val();
                     OrderArray[id] = val;
                 });
+                $('#addressSec select').each(function(){
+                    var id = $(this).attr('id');
+                    var val = $(this).val();
+                    OrderArray[id] = val;
+                });
                 var delivery = $('input[type=radio][name="delivery"]:checked').val();
                 var payment = $('input[type=radio][name="payment"]:checked').val();
 

@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateGuestTable extends Migration
+class CreateCartTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,15 +12,11 @@ class CreateGuestTable extends Migration
      */
     public function up()
     {
-        Schema::create('guests', function (Blueprint $table) {
+        Schema::create('user_cart', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
-            $table->string('email');
-            $table->string('street');
-            $table->string('city');
-            $table->integer('pincode');
-            $table->string('state');
-            $table->string('country');
+            $table->integer('user_id')->unsigned();
+            $table->string('status');
+            $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();
         });
     }
@@ -32,6 +28,6 @@ class CreateGuestTable extends Migration
      */
     public function down()
     {
-        Schema::drop('guest');
+        Schema::drop('user_cart');
     }
 }

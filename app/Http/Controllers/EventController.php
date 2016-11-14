@@ -14,6 +14,7 @@ use Cart;
 use App\Http\Controllers\CartController;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Jobs\SendBulkSMS;
+use Carbon\Carbon;
 
 use App\Http\Requests;
 
@@ -66,20 +67,30 @@ class EventController extends Controller
     }
     public function placeOrder(Request $req){
         $data = $req->data;
+
         $cartObj = new CartController();
         $cart =$cartObj->getCart();
+        $total =Cart::total();;
         $guest['name'] = $data['firstname'].' '.$data['lastname'];
         $guest['email'] = $data['email'];
         $guest['mobile'] = $data['phone'];
-        $guest['address'] = $data['street'].' '.$data['city'].' '.$data['zip'];
+        $guest['street'] = $data['street'];
+        $guest['city'] = $data['city'];
+        $guest['pincode'] = $data['zip'];
+        $guest['state'] = $data['state'];
+        $guest['country'] = $data['country'];
         $responsedata = guests::create($guest)  ;
         $res['user_id'] = $responsedata->id;
+        $res['order_date'] = Carbon::now();
+        $res['order_status'] = 'ordered';
+        $res['total'] = $total;
         $purchaserow = Purchase::create($res);
         foreach ($cart as $product) {
             $item['transaction_id'] = $purchaserow->id;
             $item['product_id'] = $product->id;
             $item['total_price'] = $product->subtotal;
             $item['quantity'] = $product->qty;
+            $item['image'] = $product->image;
             $itemres = purchaseItems::create($item)  ;
         }
 
@@ -90,6 +101,20 @@ class EventController extends Controller
         else
             return "fail";
     }
+
+    public function getOrderHistory($id){
+        $totalorders =  Purchase::where('user_id',$id)->get();
+        return view('orders_history',compact('totalorders'));
+    }
+    public function getOrderDetails($id){
+        $order =  Purchase::where('id',$id)->get();
+        $guest = guests::where('id',$id)->get();
+        $orderdetails = purchaseItems::where('transaction_id',$id)->get();
+        $subTotal =  Purchase::where('id',$id)->value('total');
+        //dd($order);
+        return view('order_details',compact('orderdetails'))->with('subTotal',$subTotal)->with('order',$order)->with('guest',$guest);
+    }
+
     public function sendEmailReminder(Request $request)
     { 
        
@@ -115,5 +140,8 @@ class EventController extends Controller
 
         $url = str_replace(" ", "%20", $url);
         $this->dispatch(new SendBulkSMS($url));
+    }
+    public function cartToDB(){
+        dd('calling');
     }
 }

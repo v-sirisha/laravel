@@ -40,4 +40,7 @@ Route::get('/cart/remove/{productid}', 'CartController@itemRemove');
 Route::get('/cart/update/{productid}/{quantity}', 'CartController@updateCart');
 Route::get('sendEmail','EventController@sendEmailReminder');
 Route::get('/order','EventController@placeOrder');
+Route::get('/order-history/{id}','EventController@getOrderHistory');
+Route::get('/order-details/{id}','EventController@getOrderDetails');
+
 View::share('cartCount', Cart::count());

@@ -6,14 +6,17 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'CreateGuestTable' => $baseDir . '/database/migrations/2016_11_8_120906_create_guest_table.php',
+    'CreateCartDetailsTable' => $baseDir . '/database/migrations/2016_11_11_122750_create_cart_details_table.php',
+    'CreateCartTable' => $baseDir . '/database/migrations/2016_11_11_122317_create_cart_table.php',
+    'CreateGuestTable' => $baseDir . '/database/migrations/2016_11_08_120906_create_guest_table.php',
     'CreateItemsTable' => $baseDir . '/database/migrations/2016_10_19_123648_create_items_table.php',
     'CreateOrdersTable' => $baseDir . '/database/migrations/2016_11_8_120906_create_orders_table.php',
     'CreatePasswordResetsTable' => $baseDir . '/database/migrations/2014_10_12_100000_create_password_resets_table.php',
     'CreateProductsTable' => $baseDir . '/database/migrations/2016_10_19_120906_create_products_table.php',
-    'CreatePurchaseItemsTable' => $baseDir . '/database/migrations/2016_11_7_120906_create_purchase_items_table.php',
-    'CreatePurchaseTable' => $baseDir . '/database/migrations/2016_11_9_120906_create_purchase_table.php',
+    'CreatePurchaseItemsTable' => $baseDir . '/database/migrations/2016_11_10_120906_create_purchase_items_table.php',
+    'CreatePurchaseTable' => $baseDir . '/database/migrations/2016_11_09_120906_create_purchase_table.php',
     'CreateRoleUserTable' => $baseDir . '/database/migrations/2016_11_09_091302_create_role_user_table.php',
+    'CreateRolesTable' => $baseDir . '/database/migrations/2016_11_09_085957_create_roles_table.php',
     'CreateUsersTable' => $baseDir . '/database/migrations/2014_10_12_000000_create_users_table.php',
     'DatabaseSeeder' => $baseDir . '/database/seeds/DatabaseSeeder.php',
     'File_Iterator' => $vendorDir . '/phpunit/php-file-iterator/src/Iterator.php',
@@ -483,7 +486,6 @@ return array(
     'PHP_Token_XOR_EQUAL' => $vendorDir . '/phpunit/php-token-stream/src/Token.php',
     'PHP_Token_YIELD' => $vendorDir . '/phpunit/php-token-stream/src/Token.php',
     'PHP_Token_YIELD_FROM' => $vendorDir . '/phpunit/php-token-stream/src/Token.php',
-    'Roles' => $baseDir . '/database/migrations/2016_11_09_085957_roles.php',
     'SebastianBergmann\\Comparator\\ArrayComparator' => $vendorDir . '/sebastian/comparator/src/ArrayComparator.php',
     'SebastianBergmann\\Comparator\\Comparator' => $vendorDir . '/sebastian/comparator/src/Comparator.php',
     'SebastianBergmann\\Comparator\\ComparisonFailure' => $vendorDir . '/sebastian/comparator/src/ComparisonFailure.php',

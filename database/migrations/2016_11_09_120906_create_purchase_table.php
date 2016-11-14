@@ -15,6 +15,9 @@ class CreatePurchaseTable extends Migration
         Schema::create('purchase', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id')->unsigned();
+            $table->timestamp('order_date');
+            $table->string('total');
+            $table->string('order_status');
             $table->foreign('user_id')->references('id')->on('guests');
             $table->timestamps();
         });

@@ -288,9 +288,9 @@
                                             <ul>
                                                 <li><a href="register.html">Register / login</a>
                                                 </li>
-                                                <li><a href="customer-orders.html">Orders history</a>
+                                                <li><a href="{{url('order-history/8')}}">Orders history</a>
                                                 </li>
-                                                <li><a href="customer-order.html">Order history detail</a>
+                                                <li><a href="#">Order history detail</a>
                                                 </li>
                                                 <li><a href="customer-wishlist.html">Wishlist</a>
                                                 </li>

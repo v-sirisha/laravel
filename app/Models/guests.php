@@ -13,6 +13,6 @@ class guests extends Model
      */
     protected $table = 'guests';
     protected $fillable = [
-        'name', 'email', 'password','address',
+        'name', 'email', 'password','street','city','pincode','state','country',
     ];
 }

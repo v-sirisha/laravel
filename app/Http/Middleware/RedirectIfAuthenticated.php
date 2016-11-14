@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\CartController;
 
 class RedirectIfAuthenticated
 {
@@ -20,7 +21,8 @@ class RedirectIfAuthenticated
         if (Auth::guard($guard)->check()) {
             return redirect('/');
         }
-
+        $cartObj = new CartController();
+        $cartObj->cartToDB();
         return $next($request);
     }
 }
