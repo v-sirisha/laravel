@@ -15,6 +15,7 @@ use App\Http\Controllers\CartController;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Jobs\SendBulkSMS;
 use Carbon\Carbon;
+use Session;
 
 use App\Http\Requests;
 
@@ -26,9 +27,18 @@ class EventController extends Controller
     	$this->AuthUser = Auth::user();
     	$this->product = $prod;
     }
-    public function welcome(){
-        $cartObj = new CartController();
-        $cartObj->getStoredCart();
+    public function welcome(Request $request){
+        if(Auth::user()){
+            $cartObj = new CartController();
+            $cartObj->cartToDB();
+        }
+        else{
+            if(!$request->session()->has('localstorage')){
+                $cartObj = new CartController();
+                $cartObj->getStoredCart();
+                Session::set('localstorage', 'true');
+            }
+        }
         return view('events.show_products')->with('key','all');
     }
     public function create(Request $req){
@@ -72,7 +82,6 @@ class EventController extends Controller
     }
     public function placeOrder(Request $req){
         $data = $req->data;
-
         $cartObj = new CartController();
         $cart =$cartObj->getCart();
         $total =Cart::total();;
@@ -116,7 +125,6 @@ class EventController extends Controller
         $guest = guests::where('id',$id)->get();
         $orderdetails = purchaseItems::where('transaction_id',$id)->get();
         $subTotal =  Purchase::where('id',$id)->value('total');
-        //dd($order);
         return view('order_details',compact('orderdetails'))->with('subTotal',$subTotal)->with('order',$order)->with('guest',$guest);
     }
 
@@ -145,8 +153,5 @@ class EventController extends Controller
 
         $url = str_replace(" ", "%20", $url);
         $this->dispatch(new SendBulkSMS($url));
-    }
-    public function cartToDB(){
-        dd('calling');
     }
 }

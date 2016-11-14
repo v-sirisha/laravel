@@ -41,6 +41,6 @@ Route::get('/order','EventController@placeOrder');
 Route::get('/order-history/{id}','EventController@getOrderHistory');
 Route::get('/order-details/{id}','EventController@getOrderDetails');
 Route::get('/store-cart','CartController@storeCart');
-
+Route::get('/destroy-cart','CartController@destroyCart');
 
 View::share('cartCount', Cart::count());

@@ -61,6 +61,9 @@ class CartController extends Controller
 		$cart = Cart::content();
 		return $cart;
 	}
+	public function destroyCart(){
+		Cart::destroy();
+	}
 	public function updateCart($id,$qty){
 		$rowId = Cart::search(array('id' => $id));
 		Cart::update($rowId[0], $qty);
@@ -75,7 +78,7 @@ class CartController extends Controller
 	}
 	public function updateCartDB($id,$qty){
 		$user_id = Auth::user()->id;
-		$cart_id = User_Cart::where('id',$user_id)->value('id');
+		$cart_id = User_Cart::where('user_id',$user_id)->value('id');
 		Cart_Details::where('cart_id',$cart_id)->where('product_id',$id)->update(['quantity' => $qty]);
 	}
 	public function removeCartDB($id){
@@ -90,15 +93,14 @@ class CartController extends Controller
 		$user_id = Auth::user()->id;
 		$cart_id = User_Cart::where('id',$user_id)->value('id');
 		$item['cart_id'] = $cart_id;
-		//dd($item);
 		Cart_Details::create($item);
 	}
 	public function cartToDB(){
-		$user_id = 2;
+		$user_id = Auth::user()->id;
 		$status = null;
 		$cart_id =User_Cart::where('user_id',$user_id)->where('status','true')->value('id');
 		if($cart_id){
-			dd('calling1');
+			Cart_Details::where('cart_id',$cart_id)->delete();
 		}
 		else{
 			$usercart['user_id'] = $user_id;
@@ -109,15 +111,15 @@ class CartController extends Controller
 		$cart = Cart::content();
 		if($cart){
 			foreach ($cart as $product) {
-	            $item['product_id'] = $product->id;
-	            $item['product_name'] = $product->product_name;
+				$item['product_id'] = $product->id;
+	            $item['product_name'] = $product->name;
 	            $item['quantity'] = $product->qty;
 	            $item['image'] = $product->image;
 	            $item['price'] = $product->price;
+	            $item['cart_id'] = $cart_id;
 	            $itemres = Cart_Details::create($item)  ;
 	        }
 		}
-        dd('calling2');
     }
     public function storeCart(){
     	$cart = $this->getCart();
