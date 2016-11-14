@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use Cart;
 use Cache;
+use Storage;
 use Carbon\Carbon;
 use App\Models\Create_Product;
 use App\Models\User_Cart;
@@ -21,19 +22,20 @@ class CartController extends Controller
 	    $cart = $this->getcartCount();
 	    $cartItems = $this->getCart();
 	    $item = array('id' => $product_id, 'name' => $product[0]->name, 'qty' => 1, 'price' => $product[0]->price,'image'=>$product[0]->image);
+	    $this->storeCart();
 	    if(Auth::user())
 	    	$this->addCartDB($item);
 		return $cart;
 	}
 	public function getcartCount(){
-		$cart = Cart::content();
+		$cart = $this->getCart();
 		$count = count($cart);
 		if($count < 0)
 			$count = 0;
 		return $count;
 	}
 	public function showCart(){
-		$cart = Cart::content();
+		$cart = $this->getCart();
 		$total = Cart::total();
 		return view('cartview',compact('cart','total'));
 	}
@@ -50,6 +52,7 @@ class CartController extends Controller
 			if(Auth::user())
 				$this->removeCartDB($id);
 		}
+		$this->storeCart();
 		$count = $this->getcartCount();
 		$arr = ['id'=>$id,'count'=>$count,'total' => Cart::total()];
 		return $arr;
@@ -65,6 +68,7 @@ class CartController extends Controller
 		if(!$returnval)
 			$returnval=['id'=>'deleted','productid'=>$id];
 		$returnval = [$returnval,'total' => Cart::total()];
+		$this->storeCart();
 		if(Auth::user())
 			$this->updateCartDB($id,$qty);
 		return $returnval;
@@ -114,5 +118,17 @@ class CartController extends Controller
 	        }
 		}
         dd('calling2');
+    }
+    public function storeCart(){
+    	$cart = $this->getCart();
+    	Storage::disk('local')->put('cart',json_encode($cart));
+    }
+    public function getStoredCart(){
+    	if(Storage::disk('local')->has('cart')){
+    		$storecart = Storage::disk('local')->get('cart');
+	   		foreach (json_decode($storecart) as $itemdetail){
+	   			Cart::add(array('id' => $itemdetail->id, 'name' => $itemdetail->name, 'qty' => $itemdetail->qty, 'price' => $itemdetail->price,'image'=>$itemdetail->image));
+	   		}
+    	}
     }
 }

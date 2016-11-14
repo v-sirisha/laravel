@@ -11,9 +11,7 @@
 |
 */
 
-Route::get('/', function () {
-    return view('events.show_products')->with('key','all');
-});
+Route::get('/', 'EventController@welcome');
 
 Route::auth();
 
@@ -42,5 +40,7 @@ Route::get('sendEmail','EventController@sendEmailReminder');
 Route::get('/order','EventController@placeOrder');
 Route::get('/order-history/{id}','EventController@getOrderHistory');
 Route::get('/order-details/{id}','EventController@getOrderDetails');
+Route::get('/store-cart','CartController@storeCart');
+
 
 View::share('cartCount', Cart::count());

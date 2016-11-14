@@ -26,6 +26,11 @@ class EventController extends Controller
     	$this->AuthUser = Auth::user();
     	$this->product = $prod;
     }
+    public function welcome(){
+        $cartObj = new CartController();
+        $cartObj->getStoredCart();
+        return view('events.show_products')->with('key','all');
+    }
     public function create(Request $req){
     	$productDetails = $req->all();
         $file = $req->file('image');
