@@ -42,5 +42,7 @@ Route::get('/order-history/{id}','EventController@getOrderHistory');
 Route::get('/order-details/{id}','EventController@getOrderDetails');
 Route::get('/store-cart','CartController@storeCart');
 Route::get('/destroy-cart','CartController@destroyCart');
-
+Route::get('/user-account/{id}','EventController@getUserDetails');
+Route::get('/user/update/{id}','EventController@updateUserDetails');
+Route::get('/user/updatepassword/{id}','EventController@changePassword');
 View::share('cartCount', Cart::count());

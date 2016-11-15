@@ -35,7 +35,7 @@ _________________________________________________________ -->
                                 <a href="customer-wishlist.html"><i class="fa fa-heart"></i> My wishlist</a>
                             </li>
                             <li>
-                                <a href="customer-account.html"><i class="fa fa-user"></i> My account</a>
+                                <a href="{{url('/user-account')}}"><i class="fa fa-user"></i> My account</a>
                             </li>
                             <li>
                                 <a href="index.html"><i class="fa fa-sign-out"></i> Logout</a>

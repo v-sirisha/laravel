@@ -16,8 +16,10 @@ use Illuminate\Foundation\Bus\DispatchesJobs;
 use App\Jobs\SendBulkSMS;
 use Carbon\Carbon;
 use Session;
-
+use App\Models\user_personal_details;
+use Hash;
 use App\Http\Requests;
+use App\Http\Requests\PasswordRequest;
 
 class EventController extends Controller
 {
@@ -127,6 +129,19 @@ class EventController extends Controller
         $subTotal =  Purchase::where('id',$id)->value('total');
         return view('order_details',compact('orderdetails'))->with('subTotal',$subTotal)->with('order',$order)->with('guest',$guest);
     }
+    public function getUserDetails($id){
+        $user_id = user_personal_details::where('user_id',$id)->value('user_id');
+        if($user_id){
+           $user = user_personal_details::where('user_id',$user_id)->get();
+           $email = User::where('id',$id)->value('email');
+           $user[0]->email = $email;
+        }
+        else{
+            $user = User::where('id',$id)->get();
+        }
+        
+        return view('customer_account',compact('user'));
+    }
 
     public function sendEmailReminder(Request $request)
     { 
@@ -143,6 +158,36 @@ class EventController extends Controller
             $message->to($data['email'])->subject($data['subject']);            
         });
         return redirect()->back();
+    }
+    public function updateUserDetails(Request $request, $id){
+        $data = $request->all();
+        $user_id = user_personal_details::where('user_id',$id)->value('user_id');
+        unset($data['_token']);
+        if($user_id){
+           user_personal_details::where('user_id',$id)->update($data);
+        }
+        else{
+            $data['user_id']=$id;
+            user_personal_details::create($data);
+        }
+        return $this->getUserDetails($id);
+    }
+    public function changePassword(PasswordRequest $request, $id)
+    {
+        $input = $request->all();
+        $user = User::find($id);
+        if (Hash::check($input['oldPassword'], $user->password)) {
+            if($input['newPassword'] == $input['confirmPassword']){
+                $user->password = Hash::make($input['newPassword']);
+                $user->save();
+                return redirect()->back()->withErrors(array('Success' => 'Password saved successfully.'));
+            }
+            else {
+                return redirect()->back()->withErrors(array('message' => 'New password and confirm password do not match. Try again.'));
+            }
+        } else {
+            return redirect()->back()->withErrors(array('message' => 'Your old password is incorrect.'));
+        }
     }
     public function sendSMS($mobile, $message)
     {
