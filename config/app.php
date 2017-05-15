@@ -158,6 +158,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         Gloudemans\Shoppingcart\ShoppingcartServiceProvider::class,
         App\Providers\ComposerServiceProvider::class,
+        Maatwebsite\Excel\ExcelServiceProvider::class,
 
     ],
 
@@ -208,6 +209,7 @@ return [
         'Html' => Collective\Html\HtmlFacade::class,
         'Image' => Intervention\Image\Facades\Image::class,
         'Cart'    => Gloudemans\Shoppingcart\Facades\Cart::class,
+        'Excel' => 'Maatwebsite\Excel\Facades\Excel',
 
     ],
 

@@ -46,3 +46,11 @@ Route::get('/user-account/{id}','EventController@getUserDetails');
 Route::get('/user/update/{id}','EventController@updateUserDetails');
 Route::get('/user/updatepassword/{id}','EventController@changePassword');
 View::share('cartCount', Cart::count());
+Route::get('/upload-data',function(){
+	return view('uploadData');
+});
+Route::post('/store-data/{platform}','EventController@storeData');
+Route::get('/final-data',function(){
+	return view('final-data');
+});
+Route::get('/get-finaldata','EventController@getFinalData');

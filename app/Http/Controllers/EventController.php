@@ -20,6 +20,9 @@ use App\Models\user_personal_details;
 use Hash;
 use App\Http\Requests;
 use App\Http\Requests\PasswordRequest;
+use Illuminate\Support\Facades\Redirect;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Models\platforms;
 
 class EventController extends Controller
 {
@@ -198,5 +201,41 @@ class EventController extends Controller
 
         $url = str_replace(" ", "%20", $url);
         $this->dispatch(new SendBulkSMS($url));
+    }
+    public function storedata(Request $request,$platform){
+        try {
+            Excel::load($request->file('excel-file'), function ($reader) {
+
+                foreach ($reader->toArray() as $row) {
+                    $rowdata = $row;
+
+                    $row = null;
+                    $row['date'] = $rowdata['date'];
+                    $row['site_name'] = $rowdata['site_name'];
+                    $row['ad_unit'] = $rowdata['ad_unit'];
+                    $row['ad_requests'] = $rowdata['ad_requests'];
+                    $row['paid_impressions'] = $rowdata['paid_impressions'];
+                    $row['revenue'] = $rowdata['revenue'];
+
+                    $exist = platforms::where('date',$row['date'])->where('site_name',$row['site_name'])->where('ad_unit',$row['ad_unit'])->first();
+                    
+                    if($exist){
+                        platforms::where('date',$row['date'])->where('site_name',$row['site_name'])->where('ad_unit',$row['ad_unit'])->delete();
+                        platforms::firstOrCreate($row);
+                    }
+                    else{
+                        platforms::firstOrCreate($row);
+                    }
+                }
+            });
+            
+        } catch (Exception $e) {
+            
+        }
+        return redirect('final-data');
+    }
+    public function getFinalData(){
+        $data = platforms::get();
+        return $data;
     }
 }
