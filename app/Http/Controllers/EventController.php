@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\platforms;
+use App\Models\platform_dates;
 use App\Models\PR;
 
 class EventController extends Controller
@@ -205,6 +206,17 @@ class EventController extends Controller
         $this->dispatch(new SendBulkSMS($url));
     }
     public function storedata(Request $request,$platform){
+
+        //dd($request->all());
+        $start_date = Carbon::parse($request->start_date)->format('Y-m-d H:i:00');
+        $end_date = Carbon::parse($request->end_date)->format('Y-m-d H:i:00');
+        $data_exist = count(platform_dates::where('platform_name',$request->platform_name)->get());
+        if($data_exist > 0){
+            platform_dates::where('platform_name',$request->platform_name)->update(['start_date'=>$start_date,'end_date'=>$end_date]);
+        }
+        else{
+            platform_dates::firstOrCreate(["platform_name"=>$request->platform_name,"start_date"=>$start_date,"end_date"=>$end_date]);
+        }
         try {
             Excel::load($request->file('excel-file'), function ($reader) use($request){
 
@@ -230,7 +242,6 @@ class EventController extends Controller
                     }
                 }
             });
-            
         } catch (Exception $e) {
             
         }

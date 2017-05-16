@@ -23,6 +23,8 @@
 				<form action="{{url('/store-data/rubicon')}}" class="col-md-6 col-md-offset-3" enctype="multipart/form-data" method="POST">
 					{{ csrf_field() }}
 					<div class="form-group"><select class="form-control platform_sel" name='platform_name' required></select></div>
+					<div class="form-group"><input class="form-control datepicker" name='start_date' placeholder='Start date of excel data' required></div>
+					<div class="form-group"><input class="form-control datepicker" name='end_date' placeholder='End date of excel data' required></div>
 					<div class="form-group"><input type="file" class="form-control" name='excel-file' required></div>
 					<div class="form-group text-center"><button type="submit" class="btn btn-primary">Upload</button></div>
 				</form>
@@ -32,7 +34,7 @@
 			<div class="tab-pane fade" id="addPr">
 				<h4 class="text-center">PR DETAILS</h4>
 				<form action="{{url('/add-pr')}}" method="POST" class="col-md-6 col-md-offset-3">
-					{{ csrf_field() }}
+					<input type="hidden" name="_token" id="with_csrf-token" value="{{ Session::token() }}"/>
 					<div class="form-group">
 						<input type="text" name="io_publisher_name" class='form-control' placeholder="Enter PR Name" required>
 					</div>
@@ -49,7 +51,7 @@
 						<input type="text" name="optimization_manager" class='form-control' placeholder="Enter Optimization Manager Name" required>
 					</div>
 					<div class="form-group">
-						<input type="text" name="date_of_onbording" class='form-control' placeholder="Date of on Bording" required>
+						<input type="text" name="date_of_onbording" class='form-control datepicker' placeholder="Date of on Bording" required>
 					</div>
 					<div class="form-group text-center">
 						<button type="submit" class="btn btn-primary">ADD PR</button>
@@ -93,8 +95,7 @@
 				data:ad_unit
 			});
 			$('.ad_unit').select2('val','all');
-			$('input[name="date_of_onbording"]').datepicker();
-			
+			$('.datepicker').datepicker();
 		});
 		
 	</script>
