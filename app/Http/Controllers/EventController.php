@@ -222,8 +222,10 @@ class EventController extends Controller
 
                 foreach ($reader->toArray() as $row) {
                     $rowdata = $row;
-
                     $row = null;
+                    if(!is_a($rowdata['date'], 'DateTime')){
+                        $rowdata['date'] = Carbon::parse($rowdata['date'])->format('Y-m-d H:i:00');
+                    }
                     $row['date'] = $rowdata['date'];
                     $row['site_name'] = $rowdata['site_name'];
                     $row['ad_unit'] = $rowdata['ad_unit'];
