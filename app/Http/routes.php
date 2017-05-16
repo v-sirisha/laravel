@@ -11,7 +11,7 @@
 |
 */
 
-Route::get('/', 'EventController@welcome');
+/*Route::get('/', 'EventController@welcome');*/
 
 Route::auth();
 
@@ -46,11 +46,15 @@ Route::get('/user-account/{id}','EventController@getUserDetails');
 Route::get('/user/update/{id}','EventController@updateUserDetails');
 Route::get('/user/updatepassword/{id}','EventController@changePassword');
 View::share('cartCount', Cart::count());
-Route::get('/upload-data',function(){
+Route::get('/',function(){
 	return view('uploadData');
 });
 Route::post('/store-data/{platform}','EventController@storeData');
 Route::get('/final-data',function(){
 	return view('final-data');
 });
+Route::get('/pr-view','EventController@getPRView');
 Route::get('/get-finaldata','EventController@getFinalData');
+Route::post('/add-pr','EventController@addPRDetails');
+Route::get('/get-pr','EventController@getPRDetails');
+Route::get('/exportdata-excel','EventController@exportToPRExcel');

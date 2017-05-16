@@ -21,8 +21,10 @@ use Hash;
 use App\Http\Requests;
 use App\Http\Requests\PasswordRequest;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\platforms;
+use App\Models\PR;
 
 class EventController extends Controller
 {
@@ -204,7 +206,7 @@ class EventController extends Controller
     }
     public function storedata(Request $request,$platform){
         try {
-            Excel::load($request->file('excel-file'), function ($reader) {
+            Excel::load($request->file('excel-file'), function ($reader) use($request){
 
                 foreach ($reader->toArray() as $row) {
                     $rowdata = $row;
@@ -216,11 +218,11 @@ class EventController extends Controller
                     $row['ad_requests'] = $rowdata['ad_requests'];
                     $row['paid_impressions'] = $rowdata['paid_impressions'];
                     $row['revenue'] = $rowdata['revenue'];
-
-                    $exist = platforms::where('date',$row['date'])->where('site_name',$row['site_name'])->where('ad_unit',$row['ad_unit'])->first();
+                    $row['platform_name'] = $request->platform_name;
+                    $exist = platforms::where('date',$row['date'])->where('site_name',$row['site_name'])->where('ad_unit',$row['ad_unit'])->where('platform_name',$row['platform_name'])->first();
                     
                     if($exist){
-                        platforms::where('date',$row['date'])->where('site_name',$row['site_name'])->where('ad_unit',$row['ad_unit'])->delete();
+                        platforms::where('date',$row['date'])->where('site_name',$row['site_name'])->where('ad_unit',$row['ad_unit'])->where('platform_name',$row['platform_name'])->delete();
                         platforms::firstOrCreate($row);
                     }
                     else{
@@ -237,5 +239,79 @@ class EventController extends Controller
     public function getFinalData(){
         $data = platforms::get();
         return $data;
+    }
+    public function addPRDetails(Request $request){
+        PR::firstOrCreate($request->except(['_token']));
+    }
+    public function getPRView(Request $request){
+        $site_name = $request->site_name;
+        $ad_unit = $request->ad_unit;
+        return view('pr-data',compact('site_name','ad_unit'));
+    }
+    public function getPRDetails(Request $request){
+       /* $data = DB::table('PR')->where('PR.site_name',$request->site_name)->where('PR.ad_unit',$request->ad_unit)->join('platforms_data',function($join){
+            $join->on('PR.ad_unit','=','platforms_data.ad_unit')->on('PR.site_name','=','platforms_data.site_name');
+        })
+        ->get();*/
+        $data = DB::table('platforms_data')->leftjoin('PR',function($leftjoin){
+            $leftjoin->on('platforms_data.ad_unit','=','PR.ad_unit')->on('platforms_data.site_name','=','PR.site_name');
+        })
+        ->get(['platforms_data.date','platforms_data.site_name','platforms_data.ad_unit','platforms_data.ad_requests','platforms_data.paid_impressions','platforms_data.revenue','platforms_data.platform_name','PR.pubmanager','PR.optimization_manager','PR.date_of_onbording','PR.io_publisher_name']);
+        return $data;
+    }
+    public function exportToExcel(){
+        
+        Excel::create('finalpr', function($excel) {
+            $excel->sheet('Sheet 1',function($sheet){
+                $data = platforms::get();
+                foreach($data as $val) {
+                    $final[] = array(
+                    $val->platform_name,
+                    $val->date,
+                    $val->site_name,
+                    $val->ad_unit,
+                    $val->ad_requests,
+                    $val->paid_impressions,
+                    $val->revenue,
+                    );
+                }
+                $sheet->fromArray($final, null, 'A1', false, false);
+                $headings = array('Platform Name','Date', 'Site Name', 'Ad Unit', 'Ad Requests', 'Paid Impressions','Revenue');
+                $sheet->prependRow(1, $headings);
+            });
+            
+        })->export('xlsx');
+
+    }
+     public function exportToPRExcel(){
+        
+        Excel::create('finalprreport', function($excel) {
+            $excel->sheet('Sheet 1',function($sheet){
+                $data = DB::table('platforms_data')->leftjoin('PR',function($leftjoin){
+                    $leftjoin->on('platforms_data.ad_unit','=','PR.ad_unit')->on('platforms_data.site_name','=','PR.site_name');
+                })
+                ->get(['platforms_data.date','platforms_data.site_name','platforms_data.ad_unit','platforms_data.ad_requests','platforms_data.paid_impressions','platforms_data.revenue','platforms_data.platform_name','PR.pubmanager','PR.optimization_manager','PR.date_of_onbording','PR.io_publisher_name']);
+                foreach($data as $val) {
+                    $final[] = array(
+                    $val->platform_name,
+                    $val->date,
+                    $val->site_name,
+                    $val->ad_unit,
+                    $val->ad_requests,
+                    $val->paid_impressions,
+                    $val->revenue,
+                    $val->pubmanager,
+                    $val->optimization_manager,
+                    $val->date_of_onbording,
+
+                    );
+                }
+                $sheet->fromArray($final, null, 'A1', false, false);
+                $headings = array('Platform Name','Date', 'Site Name', 'Ad Unit', 'Ad Requests', 'Paid Impressions','Revenue','Publisher Manager','Optimization Manager','date of onbording');
+                $sheet->prependRow(1, $headings);
+            });
+            
+        })->export('xlsx');
+
     }
 }
