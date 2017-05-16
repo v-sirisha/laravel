@@ -22,10 +22,10 @@
 				<h4 class="text-center">UPLOAD EXCEL FILE</h4>
 				<form action="{{url('/store-data/rubicon')}}" class="col-md-6 col-md-offset-3" enctype="multipart/form-data" method="POST">
 					{{ csrf_field() }}
-					<div class="form-group"><select class="form-control platform_sel" name='platform_name' required></select></div>
-					<div class="form-group"><input class="form-control datepicker" name='start_date' placeholder='Start date of excel data' required></div>
-					<div class="form-group"><input class="form-control datepicker" name='end_date' placeholder='End date of excel data' required></div>
-					<div class="form-group"><input type="file" class="form-control" name='excel-file' required></div>
+					<div class="form-group"><select class="form-control platform_sel" name='platform_name' ></select></div>
+					<div class="form-group"><input class="form-control datepicker" name='start_date' placeholder='Start date of excel data' ></div>
+					<div class="form-group"><input class="form-control datepicker" name='end_date' placeholder='End date of excel data' ></div>
+					<div class="form-group"><input type="file" class="form-control" name='excel-file' ></div>
 					<div class="form-group text-center"><button type="submit" class="btn btn-primary">Upload</button></div>
 				</form>
 				<div class="col-md-12 text-center"><a href="{{url('/final-data')}}" class="btn btn-primary">VIEW DATA</a></div>

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Auth;
 use Image;
 use App\User;
+use Lang;
 use App\Models\Create_Product;
 use App\Models\guests;
 use App\Models\Purchase;
@@ -19,6 +20,7 @@ use Session;
 use App\Models\user_personal_details;
 use Hash;
 use App\Http\Requests;
+use App\Http\Requests\pt_request;
 use App\Http\Requests\PasswordRequest;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\DB;
@@ -30,10 +32,13 @@ use App\Models\PR;
 class EventController extends Controller
 {
     use DispatchesJobs;
-    protected $AuthUser, $product;
-    public function _construct(User $user,Create_Product $prod){
+    protected $AuthUser, $product,$pr, $pt,$pt_dates;
+    public function _construct(User $user,Create_Product $prod, platforms $pt, platform_dates $pt_dates, PR $pr){
     	$this->AuthUser = Auth::user();
     	$this->product = $prod;
+        $this->pt = $pt;
+        $this->pt_dates = $pt_dates;
+        $this->pr = $pr;
     }
     public function welcome(Request $request){
         if(Auth::user()){
@@ -205,7 +210,7 @@ class EventController extends Controller
         $url = str_replace(" ", "%20", $url);
         $this->dispatch(new SendBulkSMS($url));
     }
-    public function storedata(Request $request,$platform){
+    public function storedata(pt_request $request,$platform){
 
         //dd($request->all());
         $start_date = Carbon::parse($request->start_date)->format('Y-m-d H:i:00');
@@ -227,12 +232,23 @@ class EventController extends Controller
                         $rowdata['date'] = Carbon::parse($rowdata['date'])->format('Y-m-d H:i:00');
                     }
                     $row['date'] = $rowdata['date'];
+                    $row['platform_name'] = $request->platform_name;
+                    $row['tag_id'] = $rowdata['tag_id'];
+                    $row['tag_name'] = $rowdata['tag_name'];
                     $row['site_name'] = $rowdata['site_name'];
                     $row['ad_unit'] = $rowdata['ad_unit'];
-                    $row['ad_requests'] = $rowdata['ad_requests'];
-                    $row['paid_impressions'] = $rowdata['paid_impressions'];
-                    $row['revenue'] = $rowdata['revenue'];
-                    $row['platform_name'] = $request->platform_name;
+
+                    $row['device'] = $rowdata['device'];
+                    $row['country'] = $rowdata['country'];
+                    $row['buyer'] = $rowdata['buyer'];
+
+                    $row['adserver_impressions'] = $rowdata['adserver_impressions'];
+                    $row['ssp_impressions'] = $rowdata['ssp_impressions'];
+                    $row['filled_impressions'] = $rowdata['filled_impressions'];
+                    $row['gross_revenue'] = $rowdata['gross_revenue'];
+
+                    /*confirm primary key */
+
                     $exist = platforms::where('date',$row['date'])->where('site_name',$row['site_name'])->where('ad_unit',$row['ad_unit'])->where('platform_name',$row['platform_name'])->first();
                     
                     if($exist){
@@ -269,7 +285,7 @@ class EventController extends Controller
         $data = DB::table('platforms_data')->leftjoin('PR',function($leftjoin){
             $leftjoin->on('platforms_data.ad_unit','=','PR.ad_unit')->on('platforms_data.site_name','=','PR.site_name');
         })
-        ->get(['platforms_data.date','platforms_data.site_name','platforms_data.ad_unit','platforms_data.ad_requests','platforms_data.paid_impressions','platforms_data.revenue','platforms_data.platform_name','PR.pubmanager','PR.optimization_manager','PR.date_of_onbording','PR.io_publisher_name']);
+        ->get(['platforms_data.*','PR.pubmanager','PR.optimization_manager','PR.date_of_onbording','PR.io_publisher_name']);
         return $data;
     }
     public function exportToExcel(){
@@ -303,7 +319,7 @@ class EventController extends Controller
                 $data = DB::table('platforms_data')->leftjoin('PR',function($leftjoin){
                     $leftjoin->on('platforms_data.ad_unit','=','PR.ad_unit')->on('platforms_data.site_name','=','PR.site_name');
                 })
-                ->get(['platforms_data.date','platforms_data.site_name','platforms_data.ad_unit','platforms_data.ad_requests','platforms_data.paid_impressions','platforms_data.revenue','platforms_data.platform_name','PR.pubmanager','PR.optimization_manager','PR.date_of_onbording','PR.io_publisher_name']);
+                ->get([Lang::get('table_fields.ptFields'),'PR.pubmanager','PR.optimization_manager','PR.date_of_onbording','PR.io_publisher_name']);
                 foreach($data as $val) {
                     $final[] = array(
                     $val->platform_name,
