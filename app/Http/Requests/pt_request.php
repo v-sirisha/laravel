@@ -27,7 +27,7 @@ class pt_request extends Request
             "platform_name"=>"required",
             "start_date" => "required",
             "end_date" => "required",
-            "excel-file" => "required",
+            "excel-file" => "required|mimes:xls,xlsx",
         ];
     }
     public function messages(){

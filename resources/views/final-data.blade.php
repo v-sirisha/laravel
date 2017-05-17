@@ -4,24 +4,49 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" />
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.15/css/jquery.dataTables.min.css" />
 	<style type="text/css">
-	.container{margin-top:50px;}
+	.container-fluid{margin:30px;overflow: auto;font-size: 12px;}
 	</style>
 </head>
 <body>
-	<div class="container">
+	<div class="container-fluid">
 		<table id="final-table" class="table table-striped">
 			<thead>
 				<th>Platform</th>
 				<th>Date</th>
 				<th>Site Name</th>
+				<th>Tag Id</th>
+				<th>Tag Name</th>
 				<th>Ad Unit</th>
-				<th>Ad Requests</th>
-				<th>Paid Impressions</th>
-				<th>Revenue</th>
-
+				<th>Device</th>
+				<th>Country</th>
+				<th>Buyer</th>
+				<th>Adserver Iimpressions</th>
+				<th>SSP Impressions</th>
+				<th>Filled Impressions</th>
+				<th>Gross Revenue</th>
 			</thead>
-			<tbody></tbody>
+			<tbody>
+				@foreach($data as $key=>$val)
+					<tr>
+						<td>{{$val->platform_name}}</td>
+						<td>{{$val->date}}</td>
+						<td>{{$val->site_name}}</td>
+						<td>{{$val->tag_id}}</td>
+						<td>{{$val->tag_name}}</td>
+						<td>{{$val->ad_unit}}</td>
+						<td>{{$val->device}}</td>
+						<td>{{$val->country}}</td>
+						<td>{{$val->buyer}}</td>
+						<td>{{$val->adserver_impressions}}</td>
+						<td>{{$val->ssp_impressions}}</td>
+						<td>{{$val->filled_impressions}}</td>
+						<td>{{$val->gross_revenue}}</td>
+					</tr>
+				@endforeach
+			</tbody>
 		</table>
+
+		<div class="col-md-12 text-center">{{$data->render()}}</div>
 		<div class='col-md-12'>
 			<form action="{{url('/exportdata-excel')}}" method="GET">
 				<button type="submit" class="btn btn-primary" id="export">Export To Excel</button>
@@ -33,14 +58,15 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.15/js/jquery.dataTables.min.js"></script>
 	<script type="text/javascript">
 		$(document).ready(function(){
-			$('#final-table').dataTable({
+			/*$('#final-table').dataTable({
 	            "ajax":{
 	                "url":"{{url('/get-finaldata')}}",
 	                "type":"GET",
 	                dataSrc:"",
 	            },
-	            "columns":[{'data':'platform_name'},{'data':'date'},{'data':'site_name'},{'data':'ad_unit'},{'data':'ad_requests'},{'data':'paid_impressions'},{'data':'revenue'}]
-	        });
+	            "columns":[{'data':'platform_name'},{'data':'date'},{'data':'site_name'},{'data':'tag_id'},{'data':'tag_name'},{'data':'ad_unit'},{'data':'device'},{'data':'country'},{'data':'buyer'},{'data':'adserver_impressions'},{'data':'ssp_impressions'},{'data':'filled_impressions'},{'data':'gross_revenue'}]
+	        });*/
+		$('#final-table').dataTable();
 		});
 	</script>
 </body>

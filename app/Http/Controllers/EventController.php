@@ -27,7 +27,9 @@ use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\platforms;
 use App\Models\platform_dates;
+use App\Models\country;
 use App\Models\PR;
+use App\Models\io_product;
 
 class EventController extends Controller
 {
@@ -224,7 +226,9 @@ class EventController extends Controller
         }
         try {
             Excel::load($request->file('excel-file'), function ($reader) use($request){
-
+                $start_date = Carbon::parse($request->start_date)->format('Y-m-d H:i:00');
+                $end_date = Carbon::parse($request->end_date)->format('Y-m-d H:i:00');
+                $exist = platforms::whereBetween('date',[$start_date,$end_date])->where('platform_name',$request->platform_name)->delete();
                 foreach ($reader->toArray() as $row) {
                     $rowdata = $row;
                     $row = null;
@@ -233,41 +237,66 @@ class EventController extends Controller
                     }
                     $row['date'] = $rowdata['date'];
                     $row['platform_name'] = $request->platform_name;
-                    $row['tag_id'] = $rowdata['tag_id'];
-                    $row['tag_name'] = $rowdata['tag_name'];
-                    $row['site_name'] = $rowdata['site_name'];
-                    $row['ad_unit'] = $rowdata['ad_unit'];
-
-                    $row['device'] = $rowdata['device'];
-                    $row['country'] = $rowdata['country'];
-                    $row['buyer'] = $rowdata['buyer'];
-
-                    $row['adserver_impressions'] = $rowdata['adserver_impressions'];
-                    $row['ssp_impressions'] = $rowdata['ssp_impressions'];
-                    $row['filled_impressions'] = $rowdata['filled_impressions'];
-                    $row['gross_revenue'] = $rowdata['gross_revenue'];
-
-                    /*confirm primary key */
-
-                    $exist = platforms::where('date',$row['date'])->where('site_name',$row['site_name'])->where('ad_unit',$row['ad_unit'])->where('platform_name',$row['platform_name'])->first();
-                    
-                    if($exist){
-                        platforms::where('date',$row['date'])->where('site_name',$row['site_name'])->where('ad_unit',$row['ad_unit'])->where('platform_name',$row['platform_name'])->delete();
-                        platforms::firstOrCreate($row);
+                    if(isset($rowdata['tag_id'])){
+                        $row['tag_id'] = $rowdata['tag_id'];
                     }
                     else{
-                        platforms::firstOrCreate($row);
+                        $row['tag_id'] = "";
                     }
+                    if(isset($rowdata['tag_name']))    
+                        $row['tag_name'] = $rowdata['tag_name'];
+                    else
+                        $row['tag_name'] = "";
+                    if(isset($rowdata['site_name']))
+                        $row['site_name'] = $rowdata['site_name'];
+                    else
+                        $row['site_name'] = "";
+                    if(isset($rowdata['ad_unit']))
+                        $row['ad_unit'] = $rowdata['ad_unit'];
+                    else
+                        $row['ad_unit'] = "";
+                    if(isset($rowdata['device']))
+                        $row['device'] = $rowdata['device'];
+                    else
+                        $row['device'] = "mixed";
+                    if(isset($rowdata['country']))
+                        $row['country'] = $rowdata['country'];
+                    else
+                         $row['country'] = "";
+                    if(isset( $rowdata['buyer']))
+                        $row['buyer'] = $rowdata['buyer'];
+                    else
+                         $row['buyer'] = "";
+                    if(isset( $rowdata['adserver_impressions']))
+                        $row['adserver_impressions'] = $rowdata['adserver_impressions'];
+                    else
+                         $row['adserver_impressions'] = 0;
+                    if(isset($rowdata['ssp_impressions']))
+                        $row['ssp_impressions'] = $rowdata['ssp_impressions'];
+                    else
+                         $row['ssp_impressions'] = 0;
+                    if(isset($rowdata['filled_impressions']))
+                        $row['filled_impressions'] = $rowdata['filled_impressions'];
+                    else
+                        $row['filled_impressions'] = 0;
+                    if(isset($rowdata['gross_revenue']))
+                        $row['gross_revenue'] = $rowdata['gross_revenue'];
+                    else
+                         $row['gross_revenue'] = 0.00;
+                    platforms::firstOrCreate($row);
                 }
             });
         } catch (Exception $e) {
             
         }
-        return redirect('final-data');
+        return redirect()->back();
     }
     public function getFinalData(){
-        $data = platforms::get();
-        return $data;
+        $data = platforms::paginate(100);
+        foreach ($data as $key => $value) {
+            $value->date = Carbon::parse($value->date)->format('Y-m-d');
+        }
+        return view('final-data',compact('data'));
     }
     public function addPRDetails(Request $request){
         PR::firstOrCreate($request->except(['_token']));
@@ -275,18 +304,14 @@ class EventController extends Controller
     public function getPRView(Request $request){
         $site_name = $request->site_name;
         $ad_unit = $request->ad_unit;
-        return view('pr-data',compact('site_name','ad_unit'));
-    }
-    public function getPRDetails(Request $request){
-       /* $data = DB::table('PR')->where('PR.site_name',$request->site_name)->where('PR.ad_unit',$request->ad_unit)->join('platforms_data',function($join){
-            $join->on('PR.ad_unit','=','platforms_data.ad_unit')->on('PR.site_name','=','platforms_data.site_name');
+        $data = DB::table('platform_data')->leftjoin('PR',function($leftjoin){
+            $leftjoin->on('platform_data.site_name','=','PR.site_name')->on('platform_data.ad_unit','=','PR.actual_ad_unit');
         })
-        ->get();*/
-        $data = DB::table('platforms_data')->leftjoin('PR',function($leftjoin){
-            $leftjoin->on('platforms_data.ad_unit','=','PR.ad_unit')->on('platforms_data.site_name','=','PR.site_name');
-        })
-        ->get(['platforms_data.*','PR.pubmanager','PR.optimization_manager','PR.date_of_onbording','PR.io_publisher_name']);
-        return $data;
+        ->select('platform_data.*','PR.pp_name','PR.product_name','PR.final_placement_name','PR.actual_ad_unit')->paginate(100);;
+        foreach ($data as $key => $value) {
+            $value->date = Carbon::parse($value->date)->format('Y-m-d');
+        }
+        return view('pr-data',compact('data'));
     }
     public function exportToExcel(){
         
@@ -312,12 +337,12 @@ class EventController extends Controller
         })->export('xlsx');
 
     }
-     public function exportToPRExcel(){
+    public function exportToPRExcel(){
         
         Excel::create('finalprreport', function($excel) {
             $excel->sheet('Sheet 1',function($sheet){
-                $data = DB::table('platforms_data')->leftjoin('PR',function($leftjoin){
-                    $leftjoin->on('platforms_data.ad_unit','=','PR.ad_unit')->on('platforms_data.site_name','=','PR.site_name');
+                $data = DB::table('platform_data')->leftjoin('PR',function($leftjoin){
+                    $leftjoin->on('platform_data.ad_unit','=','PR.ad_unit')->on('platform_data.site_name','=','PR.site_name');
                 })
                 ->get([Lang::get('table_fields.ptFields'),'PR.pubmanager','PR.optimization_manager','PR.date_of_onbording','PR.io_publisher_name']);
                 foreach($data as $val) {
@@ -342,5 +367,17 @@ class EventController extends Controller
             
         })->export('xlsx');
 
+    }
+    public function importToDB(Request $request){
+        try {
+            Excel::load($request->file('file'), function ($reader) use($request){
+                foreach ($reader->toArray() as $row) {
+                    io_product::firstOrCreate($row);
+                }
+            });
+        }
+        catch(Exception $e){
+
+        }
     }
 }

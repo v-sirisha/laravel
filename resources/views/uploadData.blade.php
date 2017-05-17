@@ -29,6 +29,12 @@
 					<div class="form-group text-center"><button type="submit" class="btn btn-primary">Upload</button></div>
 				</form>
 				<div class="col-md-12 text-center"><a href="{{url('/final-data')}}" class="btn btn-primary">VIEW DATA</a></div>
+				<div class="col-md-12" style="margin-top:30px;">
+					<form action="{{url('/importToData')}}" class="col-md-6 col-md-offset-3" enctype="multipart/form-data" method="POST">
+						<div class="form-group"><input type="file" class="form-control" name='file' ></div>
+						<div class="form-group text-center"><button type="submit" class="btn btn-primary">Upload</button></div>
+					</form>
+				</div>
 				
 			</div>
 			<div class="tab-pane fade" id="addPr">

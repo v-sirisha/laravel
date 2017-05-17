@@ -50,11 +50,8 @@ Route::get('/',function(){
 	return view('uploadData');
 });
 Route::post('/store-data/{platform}','EventController@storeData');
-Route::get('/final-data',function(){
-	return view('final-data');
-});
+Route::get('/final-data','EventController@getFinalData');
 Route::get('/pr-view','EventController@getPRView');
-Route::get('/get-finaldata','EventController@getFinalData');
 Route::post('/add-pr','EventController@addPRDetails');
-Route::get('/get-pr','EventController@getPRDetails');
 Route::get('/exportdata-excel','EventController@exportToPRExcel');
+Route::post('/importToData','EventController@importToDB');

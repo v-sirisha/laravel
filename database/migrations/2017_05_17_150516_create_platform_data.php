@@ -13,6 +13,7 @@ class CreatePlatformData extends Migration
     public function up()
     {
         Schema::create('platform_data', function (Blueprint $table) {
+            $table->increments('id');
             $table->timestamp('date');
             $table->string('platform_name');
             $table->string('site_name');
@@ -22,9 +23,9 @@ class CreatePlatformData extends Migration
             $table->string('device');
             $table->string('country');
             $table->string('buyer');
-            $table->int('adserver_impressions');
-            $table->int('ssp_impressions');
-            $table->int('filled_impressions');
+            $table->integer('adserver_impressions');
+            $table->integer('ssp_impressions');
+            $table->integer('filled_impressions');
             $table->double('gross_revenue', 15, 8);
             $table->timestamps();
         });
