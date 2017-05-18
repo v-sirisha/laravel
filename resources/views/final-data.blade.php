@@ -5,6 +5,10 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.15/css/jquery.dataTables.min.css" />
 	<style type="text/css">
 	.container-fluid{margin:30px;overflow: auto;font-size: 12px;}
+	span.table_label {
+	    font-size: 16px;
+	    margin-left: 35%;
+	}
 	</style>
 </head>
 <body>
@@ -47,11 +51,7 @@
 		</table>
 
 		<div class="col-md-12 text-center">{{$data->render()}}</div>
-		<div class='col-md-12'>
-			<form action="{{url('/exportdata-excel')}}" method="GET">
-				<button type="submit" class="btn btn-primary" id="export">Export To Excel</button>
-			</form>
-		</div>
+		
 	</div>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -67,6 +67,7 @@
 	            "columns":[{'data':'platform_name'},{'data':'date'},{'data':'site_name'},{'data':'tag_id'},{'data':'tag_name'},{'data':'ad_unit'},{'data':'device'},{'data':'country'},{'data':'buyer'},{'data':'adserver_impressions'},{'data':'ssp_impressions'},{'data':'filled_impressions'},{'data':'gross_revenue'}]
 	        });*/
 		$('#final-table').dataTable();
+		$('#final-table_length').after('<span class="table_label">PLATFORM DATA</span>')
 		});
 	</script>
 </body>

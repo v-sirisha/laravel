@@ -35,6 +35,12 @@
 						<div class="form-group text-center"><button type="submit" class="btn btn-primary">Upload</button></div>
 					</form>
 				</div>
+
+				<div class='col-md-12'>
+					<form action="{{url('/exportdata-excel')}}" method="GET">
+						<button type="submit" class="btn btn-primary" id="export">Export To Excel</button>
+					</form>
+				</div>
 				
 			</div>
 			<div class="tab-pane fade" id="addPr">

@@ -5,11 +5,15 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.15/css/jquery.dataTables.min.css" />
 	<style type="text/css">
 		.container-fluid{margin:30px;overflow: auto;font-size: 12px;}
+		span.table_label {
+		    font-size: 16px;
+		    margin-left: 35%;
+		}
 	</style>
 </head>
 <body>
 	<div class="container-fluid">
-		<h4 class="text-center">PR Details</h4>
+		<!-- <h4 class="text-center">PR Details</h4> -->
 		<table class="table table-bordered" id="pr_table">
 			<thead>
 				<th>PF Name</th>
@@ -29,6 +33,16 @@
 				<th>Product Name</th>
 				<th>Placement Tag</th>
 				<th>Actual ad unit</th>
+				<th>Deal Type</th>
+				<th>Date of Io creation</th>
+				<th>Publisher Manager</th>
+				<th>YM Manager</th>
+				<th>Publisher url</th>
+				<th>Publisher Category</th>
+				<th>Country Origin</th>
+				<th>Language</th>
+				<th>Business Name</th>
+				<th>Billing Currency</th>
 			</thead>
 			<tbody>
 				@foreach($data as $key=>$val)
@@ -50,6 +64,16 @@
 						<td>{{$val->product_name}}</td>
 						<td>{{$val->final_placement_name}}</td>
 						<td>{{$val->actual_ad_unit}}</td>
+						<td>{{$val->deal_type}}</td>
+                        <td>{{$val->date_of_io_creation}}</td>
+                        <td>{{$val->publisher_manager}}</td>
+                        <td>{{$val->ym_manager}}</td>
+                        <td>{{$val->publisher_url}}</td>
+                        <td>{{$val->publisher_category}}</td>
+                        <td>{{$val->country_origin}}</td>
+                        <td>{{$val->language}}</td>
+                        <td>{{$val->business_name}}</td>
+                        <td>{{$val->billing_currency}}</td>
 					</tr>
 				@endforeach
 			</tbody>
@@ -62,6 +86,7 @@
 	<script type="text/javascript">
 		$(document).ready(function(){
 			$('#pr_table').dataTable();
+			$('#pr_table_length').after('<span class="table_label">PR Data</span>');
 		});
 	</script>
 </body>

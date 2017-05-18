@@ -46,12 +46,16 @@ Route::get('/user-account/{id}','EventController@getUserDetails');
 Route::get('/user/update/{id}','EventController@updateUserDetails');
 Route::get('/user/updatepassword/{id}','EventController@changePassword');
 View::share('cartCount', Cart::count());
+
+/* Reporting Routes */
+
 Route::get('/',function(){
 	return view('uploadData');
 });
-Route::post('/store-data/{platform}','EventController@storeData');
-Route::get('/final-data','EventController@getFinalData');
-Route::get('/pr-view','EventController@getPRView');
-Route::post('/add-pr','EventController@addPRDetails');
-Route::get('/exportdata-excel','EventController@exportToPRExcel');
-Route::post('/importToData','EventController@importToDB');
+Route::post('/store-data/{platform}','ReportingController@storeData');
+Route::get('/final-data','ReportingController@getFinalData');
+Route::get('/pr-view','ReportingController@getPRView');
+Route::post('/add-pr','ReportingController@addPRDetails');
+Route::get('/exportdata-excel','ReportingController@exportToPRExcel');
+Route::post('/importToData','ReportingController@importToDB');
+Route::get('/tasktodo','ReportingController@task');
