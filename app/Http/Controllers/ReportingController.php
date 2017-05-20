@@ -17,6 +17,7 @@ use App\Models\PR;
 use App\Models\PR_table;
 use App\Models\io_product;
 use App\Models\tags;
+use App\Models\tag_index;
 use App\Models\pt_raw_data;
 
 use App\Http\Requests;
@@ -28,6 +29,11 @@ class ReportingController extends Controller
         $this->pt = $pt;
         $this->pt_dates = $pt_dates;
         $this->pr = $pr;
+    }
+    public function index(){
+        $pr_miss = $this->task('PR');
+        $io_miss = $this->task('io_product');
+        return view('reporting.index',compact('pr_miss','io_miss'));
     }
     public function getFinalData(){
 
@@ -48,12 +54,11 @@ class ReportingController extends Controller
     public function getPRView(Request $request){
         $site_name = $request->site_name;
         $ad_unit = $request->ad_unit;
-        $data = DB::table('platform_data')->leftjoin('PR',function($leftjoin){
-                    $leftjoin->on('platform_data.platform_name','=','PR.platform_name')->on('platform_data.site_name','=','PR.site_name')
-                    ->on('platform_data.tag_name','=','PR.tag_name');
-                })->leftjoin('io_product','io_product.final_placement_tag','=','PR.final_placement_name')
-                ->select('platform_data.*','PR.pp_name','PR.product_name','PR.final_placement_name','PR.actual_ad_unit','io_product.*')->paginate(100);
-                
+        $data = pt_raw_data::leftjoin('tag','tag.id','=','pt_raw_data.tag')
+                ->leftjoin('tag_index','tag_index.tag_id','=','tag.id')
+                ->leftjoin('PR_table','PR_table.tag_index_placement','=','tag_index.final_placement_name')
+                ->leftjoin('io_product','io_product.final_placement_tag','=','PR_table.tag_index_placement')
+                ->select('pt_raw_data.*','PR_table.io_publisher_name','PR_table.product_name','PR_table.tag_index_placement','PR_table.actual_ad_unit','io_product.*')->paginate(100);;        
         foreach ($data as $key => $value) {
             $value->date = Carbon::parse($value->date)->format('Y-m-d');
         }
@@ -65,7 +70,9 @@ class ReportingController extends Controller
         $start_date = Carbon::parse($request->start_date)->format('Y-m-d H:i:00');
         $end_date = Carbon::parse($request->end_date)->format('Y-m-d H:i:00');
         $data_exist = count(platform_dates::where('platform_name',$request->platform_name)->get());
-
+        $data = pt_raw_data::whereBetween('date',[$start_date,$end_date])->leftjoin('tag',function($leftjoin) use($request){
+            $leftjoin->on('tag.id','=','pt_raw_data.tag');
+        })->where('tag.platform_name',$request->platform_name)->delete();
         if($data_exist > 0){
             platform_dates::where('platform_name',$request->platform_name)->update(['start_date'=>$start_date,'end_date'=>$end_date]);
         }
@@ -77,7 +84,7 @@ class ReportingController extends Controller
 
                 $start_date = Carbon::parse($request->start_date)->format('Y-m-d H:i:00');
                 $end_date = Carbon::parse($request->end_date)->format('Y-m-d H:i:00');
-                platforms::whereBetween('date',[$start_date,$end_date])->where('platform_name',$request->platform_name)->delete();
+                //pt_raw_data::leftjoin('tag','tag.id','=','pt_raw_data.tag')->whereBetween('date',[$start_date,$end_date])->where('tag.platform_name',$request->platform_name)->delete();
                 
                 foreach ($reader->toArray() as $row) {
 
@@ -94,22 +101,22 @@ class ReportingController extends Controller
                         $row['tag_id'] = $rowdata['tag_id'];
                     }
                     else{
-                        $row['tag_id'] = "default";
+                        $row['tag_id'] = null;
                     }
                     if(isset($rowdata['tag_name']))    
                         $row['tag_name'] = $rowdata['tag_name'];
                     else
-                        $row['tag_name'] = "default";
+                        $row['tag_name'] = null;
 
                     if(isset($rowdata['site_name']))
                         $row['site_name'] = $rowdata['site_name'];
                     else
-                        $row['site_name'] = "default";
+                        $row['site_name'] = null;
 
                     if(isset($rowdata['ad_unit']))
                         $row['ad_unit'] = $rowdata['ad_unit'];
                     else
-                        $row['ad_unit'] = "default";
+                        $row['ad_unit'] = null;
 
                     if(isset($rowdata['device']))
                         $row['device'] = $rowdata['device'];
@@ -119,12 +126,12 @@ class ReportingController extends Controller
                     if(isset($rowdata['country']))
                         $row['country'] = $rowdata['country'];
                     else
-                         $row['country'] = "default";
+                         $row['country'] = null;
 
                     if(isset( $rowdata['buyer']))
                         $row['buyer'] = $rowdata['buyer'];
                     else
-                         $row['buyer'] = "default";
+                         $row['buyer'] = null;
 
                     if(isset( $rowdata['adserver_impressions']))
                         $row['adserver_impressions'] = $rowdata['adserver_impressions'];
@@ -150,10 +157,10 @@ class ReportingController extends Controller
                     $tag['tag_id'] = $row['tag_id'];
                     $tag['tag_name'] = $row['tag_name'];
                     $tag['site_name'] = $row['site_name'];
-                    if($row['tag_id'] != "")
-                        $tag['tag'] = $row['tag_id'];
-                    else
+                    if($row['tag_id'] == null)
                         $tag['tag'] = $row['tag_name'];
+                    else
+                        $tag['tag'] = $row['tag_id'];
 
                     $raw_data['date'] = $row['date'];
                     $raw_data['ad_unit'] = $row['ad_unit'];
@@ -174,6 +181,7 @@ class ReportingController extends Controller
                     else{
                         $raw_data['tag'] = $tag_exist;
                     }
+                    //dd($raw_data);
                     pt_raw_data::firstOrCreate($raw_data);
                 }
             });
@@ -186,13 +194,7 @@ class ReportingController extends Controller
         
         Excel::create('PR-Report', function($excel) {
             $excel->sheet('Sheet 1',function($sheet){
-
-                $data = DB::table('platform_data')->leftjoin('PR',function($leftjoin){
-                    $leftjoin->on('platform_data.platform_name','=','PR.platform_name')->on('platform_data.site_name','=','PR.site_name')
-                    ->on('platform_data.tag_name','=','PR.tag_name');
-                })->leftjoin('io_product','io_product.final_placement_tag','=','PR.final_placement_name')
-                ->select('platform_data.*','PR.pp_name','PR.product_name','PR.final_placement_name','PR.actual_ad_unit','io_product.*')->paginate(100);
-                
+                $data = pt_raw_data::leftjoin('tag','tag.id','=','pt_raw_data.tag')->leftjoin('tag_index','tag_index.tag_id','=','tag.id')->leftjoin('PR_table','PR_table.tag_index_placement','=','tag_index.final_placement_name')->leftjoin('io_product','io_product.final_placement_tag','=','PR_table.tag_index_placement')->get();
                 foreach ($data as $key => $value) {
                     $value->date = Carbon::parse($value->date)->format('Y-m-d');
                     $final[] = array(
@@ -209,7 +211,7 @@ class ReportingController extends Controller
                         $value->ssp_impressions,
                         $value->filled_impressions,
                         $value->gross_revenue,
-                        $value->pp_name,
+                        $value->io_publisher_name,
                         $value->product_name,
                         $value->actual_ad_unit,
                         $value->final_placement_name,
@@ -241,64 +243,90 @@ class ReportingController extends Controller
                         case 'PR':
                             /* get placement tag from tag_index */
 
-                            $data = tag::where('platform_name',$row['platform_name'])->where('site_name',$row['site_name'])
-                            ->where('tag_id',$row['tag_id'])->where('tag_name',$row['tag_name'])->join('tag_index','tag.id','=','tag_index.tag_id')
-                            ->get(['placement_tag']);
+                            $data = tags::where('platform_name',$row['platform_name'])->where('site_name',$row['site_name'])
+                            ->where('tag.tag_id',$row['tag_id'])->where('tag_name',$row['tag_name'])->join('tag_index','tag.id','=','tag_index.tag_id')
+                            ->get(['final_placement_name']);
+
 
                             if(count($data) == 0){
+                                
 
                                 /* update tag_index with tag_id and placement_tag */
 
-                                $tag_index = tag::where('platform_name',$row['platform_name'])->where('site_name',$row['site_name'])
+                                $tag_index = tags::where('platform_name',$row['platform_name'])->where('site_name',$row['site_name'])
                                 ->where('tag_id',$row['tag_id'])->where('tag_name',$row['tag_name'])->value('tag.id');
+                                
                                 if($tag_index){
+                                    //dd($tag_index);
                                     $tag_index_details = tag_index::firstOrCreate(['tag_id'=>$tag_index,'final_placement_name'=>$row['final_placement_name']]);
 
                                     $pr_data['tag_index_placement'] = $tag_index_details['final_placement_name'];
-                                    $pr_data['pp_name'] = $row['pp_name'];
+                                    $pr_data['io_publisher_name'] = $row['io_publisher_name'];
                                     $pr_data['product_name'] = $row['product_name'];
                                     $pr_data['actual_ad_unit'] = $row['actual_ad_unit'];
 
                                     PR_table::firstOrCreate($pr_data);
                                 }
                                 else{
+                                    $tag['platform_name'] = $row['platform_name'];
+                                    $tag['tag_id'] = $row['tag_id'];
+                                    $tag['tag_name'] = $row['tag_name'];
+                                    $tag['site_name'] = $row['site_name'];
 
-                                    /* tag details not in the platform_data */
+                                    if($row['tag_id'] == null)
+                                        $tag['tag'] = $row['tag_name'];
+                                    else
+                                        $tag['tag'] = $row['tag_id'];
+                                    $tag_detail = tags::firstOrCreate($tag);
+
+                                    $tag_index_details = tag_index::firstOrCreate(['tag_id'=>$tag_detail->id,'final_placement_name'=>$row['final_placement_name']]);
+
+                                    $pr_data['tag_index_placement'] = $row['final_placement_name'];
+                                    $pr_data['io_publisher_name'] = $row['io_publisher_name'];
+                                    $pr_data['product_name'] = $row['product_name'];
+                                    $pr_data['actual_ad_unit'] = $row['actual_ad_unit'];
+                                    PR_table::firstOrCreate($pr_data);
                                 }
-                                //PR::firstOrCreate($row);
                             }
                             else{
                                 /* If placement tag exist (duplicate data) : delete- update | nothing */
+
                             }
                             break;
                         case 'io_product':
-                            $pr_tb_data = PR_table::where('tag_index_placement',$row['final_placement_tag'])->get();
-                            if(count($pr_tb_data) == 0){
-                                io_product::firstOrCreate($row);
+                        
+                            $pr_tb_placementId = PR_table::where('tag_index_placement',$row['final_placement_tag'])->value('tag_index_placement');
+                            if($pr_tb_placementId){
+
+                                $io_product_placementId = io_product::where('final_placement_tag',$row['final_placement_tag'])->value('final_placement_tag');
+                                if($io_product_placementId){
+                                    io_product::where('final_placement_tag',$row['final_placement_tag'])->update($row);
+                                }
+                                else{
+                                    io_product::firstOrCreate($row);
+                                }
                             }
                             else{
-                                /*Duplicate row */
+                                /* final placemet tag not exist in pr_table new entry in io_excel */
                             }
                             break;
                         case 'country':
                             $country = country::where('country_name',$row['country_name'])->value('id');
                             if(!$country){
-                                country::firstOrCreate($row);
+                                country::firstOrCreate(["country_name"=>$row['country_name'],"analytics_country_group"=>$row['analytics_country_group'],"deal_country_group"=>$row['deal_country_group']]);
                             }
                             else{
-                                /* Country exist in Table */
-                                //country::where('country',$row['country'])->update('country_group'=>$row['country_group']);
+                                country::where('country_name',$row['country_name'])->update(["analytics_country_group" => $row['analytics_country_group'],"deal_country_group" => $row['deal_country_group']]);
                             }
                             
                             break;
                         case 'device':
                             $device = device::where('device_name',$row['device_name'])->value('id');
                             if(!$device){
-                                device::firstOrCreate($row);
+                                device::firstOrCreate(["device_name"=>$row['device_name'],"device_group"=>$row['device_group']]);
                             }
                             else{
-                                /* device exist in Table */
-                                //device::where('device_name',$row['country'])->update('country_group'=>$row['country_group']);
+                                device::where('device_name',$row['device_name'])->update(["device_group"=>$row['device_group']]);
                             }
                             
                             break;
@@ -313,41 +341,71 @@ class ReportingController extends Controller
 
         }
     }
-    public function task(){
-        return (PR::pluck('platform_name'));
-
+    public function task($table="PR"){
         $pr = null;
         $io = null;
+        if($table == "PR"){
 
-        $ids = tag::pluck('id');
-        $tagIds = tag_index::pluck('tag_id');
-        $miss_ids = array_except($ids,$tagIds);
+            $ids = tags::pluck('id');
+            $pt_ids = pt_raw_data::distinct()->pluck('tag')->toArray();
+            $tagIds = tag_index::distinct()->pluck('tag_id')->toArray();
 
-        if(count($miss_ids) > 0){
-            $miss_pr = tag::whereIn('id',$miss_ids)->get();
+            $pt_empty = array_diff($tagIds, $pt_ids);
+            $msg = "";
+            $miss_pr = null;
+            if(count($pt_empty) < 0){
+                $msg = "Please update platforms data ";
+            }
+            $miss_ids = array_diff($pt_ids, $tagIds) ; /* placement tag not exist in tag_index */
+
+            $miss_values = pr_table::where('io_publisher_name', '=', '')->orWhereNull('io_publisher_name')
+                        ->orWhereNull('product_name', '=', '')->orWhereNull('product_name')
+                        ->orWhereNull('actual_ad_unit', '=', '')->orWhereNull('actual_ad_unit')
+                        ->pluck('tag_index_placement'); /* exist in pr_table but empty values */
+
+            $empty_id_arr = tag_index::whereIn('final_placement_name',$miss_values)->get(['tag_id'])->toArray();
+            $total_ids = array_merge($miss_ids,$empty_id_arr);
+            if(count($total_ids) > 0){
+                $miss_pr = tags::whereIn('id',$total_ids)->get();
+            }
+            return $miss_pr;
         }
-
-        $tag_index_placement = PR_table::pluck('tag_index_placement');
-        $final_placement_tag = io_product::pluck('final_placement_tag');
-        $miss_placement = array_except($tag_index_placement,$final_placement_tag);
-
+        else if($table == "io_product") {
+            $tag_index_placement = PR_table::distinct()->pluck('tag_index_placement')->toArray();
+            $final_placement_tag = io_product::distinct()->pluck('final_placement_tag')->toArray();
+            $miss_values = io_product::where('deal_type', '=', '')->orWhereNull('deal_type')
+                        ->orWhereNull('parent_publisher', '=', '')->orWhereNull('parent_publisher')
+                        ->orWhereNull('date_of_io_creation', '=', '')->orWhereNull('date_of_io_creation')
+                        ->orWhereNull('parent_publisher', '=', '')->orWhereNull('parent_publisher')
+                        ->orWhereNull('ym_manager', '=', '')->orWhereNull('ym_manager')
+                        ->orWhereNull('publisher_url', '=', '')->orWhereNull('publisher_url')
+                        ->orWhereNull('publisher_category', '=', '')->orWhereNull('publisher_category')
+                        ->orWhereNull('country_origin', '=', '')->orWhereNull('country_origin')
+                        ->orWhereNull('language', '=', '')->orWhereNull('language')
+                        ->orWhereNull('business_name', '=', '')->orWhereNull('business_name')
+                        ->orWhereNull('billing_currency', '=', '')->orWhereNull('billing_currency')
+                        ->pluck('final_placement_tag'); /* placement tag exist in io_product null values */
+            $miss_placement = array_diff($tag_index_placement, $final_placement_tag); /* exist in pr_table but not in io_product */
+            
+            /* Merge miss_placement and miss values and pass to loop */
+            if(count($miss_values) > 0){
+                $miss_io = io_product::whereIn('final_placement_tag',$miss_values)->get();
+            }
+            return $miss_io;
+        }
     }
     public function download_miss_data_excel($type){
+       // dd($type);
         switch ($type) {
             case 'PR':
                 Excel::create('PR-data', function($excel) {
                     $excel->sheet('Sheet 1',function($sheet){
 
-                        $ids = tag::pluck('id');
-                        $tagIds = tag_index::pluck('tag_id');
-                        $miss_ids = array_except($ids,$tagIds);
-                        if(count($miss_ids) > 0){
-                            $miss_pr = tag::whereIn('id',$miss_ids)->get();
-                        } 
+                        $miss_pr = $this->task('PR');
                         
                         foreach ($miss_pr as $key => $value) {
 
-                            $value->pp_name = "";
+                            $value->io_publisher_name = "";
                             $value->product_name = "";
                             $value->actual_ad_unit = "";
                             $value->final_placement_name = "";
@@ -357,26 +415,26 @@ class ReportingController extends Controller
                                 $value->site_name,
                                 $value->tag_id,
                                 $value->tag_name,
-                                $value->pp_name,
+                                $value->io_publisher_name,
                                 $value->product_name,
                                 $value->actual_ad_unit,
                                 $value->final_placement_name,
                             );
                         }
                         $sheet->fromArray($final, null, 'A1', false, false);
-                        $headings = array('Platform Name', 'Site Name','Tag Id','Tag Name');
+                        $headings = array('Platform Name', 'Site Name','Tag Id','Tag Name','IO Publisher Name','Product Name','Actual Ad Unit Size','final placement name');
                         $sheet->prependRow(1, $headings);
                     });
                     
                 })->export('xlsx');
+                return view('/');
                 break;
-            case 'io':
+            case 'io_product':
                Excel::create('io-data', function($excel) {
                     $excel->sheet('Sheet 1',function($sheet){
 
-                        $tag_index_placement = PR_table::pluck('tag_index_placement');
-                        $final_placement_tag = io_product::pluck('final_placement_tag');
-                        $miss_placement = array_except($tag_index_placement,$final_placement_tag); 
+                        
+                        $miss_placement = $this->task('io_product');
 
                         for ($i=0; $i < count($miss_placement); $i++) { 
 
@@ -396,5 +454,15 @@ class ReportingController extends Controller
                 # code...
                 break;
         }
+    }
+    public function updateon_screen($type){
+        $data = $this->task($type);
+        return view('reporting.update_screen',compact('data','type'));
+    }
+    public function getEndDate($pt_name){
+        $date = platform_dates::where('platform_name',$pt_name)->value('end_date');
+        if($date)
+            $date = Carbon::parse($date)->format('d M Y');
+        return $date;
     }
 }

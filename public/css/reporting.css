@@ -1,0 +1,28 @@
+body{background-color: #eee;}
+#header{background: #212121;height: 70px;}
+#header img{position: absolute;top:5px;}
+#header h3{color:#B58030;text-transform: uppercase;}
+.padding0{padding: 0px;}
+.paddingleft{padding-left: 0px;}
+.paddingright{padding-right: 0px;}
+.content_wrapper{margin: 30px 0;}
+.subsection:not(:last-child){border-right: 1px solid #dbdbdb;}
+#pr_table,#yr_table{font-size: 10px;}
+#pr_table tbody td,#yr_table tbody td{padding: 5px 3px;}
+span.table_label {
+    text-transform: uppercase;
+    font-size: 16px;
+    font-weight: bold;
+    color: orange;
+}
+#pr_table_wrapper span.table_label{margin-left: 28%;}
+#yr_table_wrapper span.table_label{margin-left: 28%;}
+.table_wrapper{overflow: auto;max-width: 100%;}
+
+#pt_upload_div{border-bottom: 1px solid #ccc;margin-bottom: 10px;}
+.warning_div p{color: #d43a36;font-size: 12px;margin-bottom: 0px;}
+.pmargin{margin-bottom: 0px;}
+p#pt_modified {
+    font-size: 12px;
+    color: green;
+}

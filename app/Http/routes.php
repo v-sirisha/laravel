@@ -49,13 +49,13 @@ View::share('cartCount', Cart::count());
 
 /* Reporting Routes */
 
-Route::get('/',function(){
-	return view('uploadData');
-});
+Route::get('/','ReportingController@index');
 Route::post('/store-data/{platform}','ReportingController@storeData');
 Route::get('/final-data','ReportingController@getFinalData');
 Route::get('/pr-view','ReportingController@getPRView');
 Route::post('/add-pr','ReportingController@addPRDetails');
 Route::get('/exportdata-excel','ReportingController@exportToPRExcel');
 Route::post('/importToData','ReportingController@importToDB');
-Route::get('/tasktodo','ReportingController@task');
+Route::get('/update/{type}','ReportingController@updateon_screen');
+Route::get('/download-excel/{type}','ReportingController@download_miss_data_excel');
+Route::get('get-lastmodified-date/{pt_name}','ReportingController@getEndDate');

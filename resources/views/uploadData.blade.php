@@ -13,12 +13,16 @@
 <body>
 	<div class="container">
 		<ul class="nav nav-tabs">
-			<li class="active"><a href="#upload" data-toggle="tab">Upload Platform Data</a></li>
+			<li class="active"><a href="#pending_task" data-toggle="tab">Pending Task</a></li>
+			<li><a href="#upload" data-toggle="tab">Upload Platform Data</a></li>
 			<li><a href="#addPr" data-toggle="tab">Add PR</a></li>
 			<li><a href="#getPr" data-toggle="tab">Get PR</a></li>
 		</ul>
 		<div class="tab-content">
-			<div class="tab-pane fade in active" id="upload">
+			<div class="tag-pane fade in active " id='pending_task'>
+				{{$data['miss_pr']}}<br>
+			</div>
+			<div class="tab-pane fade" id="upload">
 				<h4 class="text-center">UPLOAD EXCEL FILE</h4>
 				<form action="{{url('/store-data/rubicon')}}" class="col-md-6 col-md-offset-3" enctype="multipart/form-data" method="POST">
 					{{ csrf_field() }}
@@ -31,6 +35,7 @@
 				<div class="col-md-12 text-center"><a href="{{url('/final-data')}}" class="btn btn-primary">VIEW DATA</a></div>
 				<div class="col-md-12" style="margin-top:30px;">
 					<form action="{{url('/importToData')}}" class="col-md-6 col-md-offset-3" enctype="multipart/form-data" method="POST">
+						<div class="form-group"><input type="text" class="form-control" name='table_name' ></div>
 						<div class="form-group"><input type="file" class="form-control" name='file' ></div>
 						<div class="form-group text-center"><button type="submit" class="btn btn-primary">Upload</button></div>
 					</form>

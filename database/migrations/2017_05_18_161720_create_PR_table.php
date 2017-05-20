@@ -15,7 +15,7 @@ class CreatePRTable extends Migration
         Schema::create('PR_table', function (Blueprint $table) {
             $table->increments('id');
             $table->string('tag_index_placement');
-            $table->string('pp_name');
+            $table->string('io_publisher_name');
             $table->string('product_name');
             $table->string('actual_ad_unit');
             $table->timestamps();
