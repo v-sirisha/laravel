@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Lang;
+use Schema;
 use Carbon\Carbon;
 use App\Http\Requests\pt_request;
 use Illuminate\Support\Facades\Redirect;
@@ -33,7 +34,20 @@ class ReportingController extends Controller
     public function index(){
         $pr_miss = $this->task('PR');
         $io_miss = $this->task('io_product');
-        return view('reporting.index',compact('pr_miss','io_miss'));
+        $parent_publishers = io_product::distinct()->pluck('parent_publisher');
+        $ym_managers = io_product::distinct()->pluck('ym_manager');
+        $product_names = pr_table::distinct()->pluck('product_name');
+        $country = $this->task('country');
+        $device = $this->task('device');
+        $gen_col = array('id','created_at','updated_at','tag_index_placement','tag','ad_unit','device','country','buyer');
+        $columns = Schema::getColumnListing('pt_raw_data');
+        array_unshift($columns, 'platform_name');
+        $columns = array_merge($columns,Schema::getColumnListing('PR_table'));
+        $columns = array_merge($columns,Schema::getColumnListing('device'));        
+        $columns = array_merge($columns,Schema::getColumnListing('country'));
+        $columns = array_merge($columns,Schema::getColumnListing('io_product'));
+        $columns = array_unique(array_diff($columns, $gen_col));
+        return view('reporting.index',compact('pr_miss','io_miss','parent_publishers','ym_managers','product_names','country','device','columns'));
     }
     public function getFinalData(){
 
@@ -50,21 +64,6 @@ class ReportingController extends Controller
         /* Add pr data in pr_table */
         PR::firstOrCreate($request->except(['_token']));
     }
-
-    public function getPRView(Request $request){
-        $site_name = $request->site_name;
-        $ad_unit = $request->ad_unit;
-        $data = pt_raw_data::leftjoin('tag','tag.id','=','pt_raw_data.tag')
-                ->leftjoin('tag_index','tag_index.tag_id','=','tag.id')
-                ->leftjoin('PR_table','PR_table.tag_index_placement','=','tag_index.final_placement_name')
-                ->leftjoin('io_product','io_product.final_placement_tag','=','PR_table.tag_index_placement')
-                ->select('pt_raw_data.*','PR_table.io_publisher_name','PR_table.product_name','PR_table.tag_index_placement','PR_table.actual_ad_unit','io_product.*')->paginate(100);;        
-        foreach ($data as $key => $value) {
-            $value->date = Carbon::parse($value->date)->format('Y-m-d');
-        }
-        return view('pr-data',compact('data'));
-    }
-
     public function storedata(pt_request $request,$platform){
 
         $start_date = Carbon::parse($request->start_date)->format('Y-m-d H:i:00');
@@ -190,11 +189,27 @@ class ReportingController extends Controller
         }
         return redirect()->back();
     }
-    public function exportToPRExcel(){
-        
+    public function getPRView(Request $request){
+        $site_name = $request->site_name;
+        $ad_unit = $request->ad_unit;
+        $data = pt_raw_data::leftjoin('tag','tag.id','=','pt_raw_data.tag')
+                ->leftjoin('tag_index','tag_index.tag_id','=','tag.id')
+                ->leftjoin('PR_table','PR_table.tag_index_placement','=','tag_index.final_placement_name')
+                ->leftjoin('io_product','io_product.final_placement_tag','=','PR_table.tag_index_placement')
+                ->select('pt_raw_data.*','PR_table.io_publisher_name','PR_table.product_name','PR_table.tag_index_placement','PR_table.actual_ad_unit','io_product.*')->paginate(100);;        
+        foreach ($data as $key => $value) {
+            $value->date = Carbon::parse($value->date)->format('Y-m-d');
+        }
+        return view('pr-data',compact('data'));
+    }
+    public function exportToPRExcel(Request $request){        
         Excel::create('PR-Report', function($excel) {
             $excel->sheet('Sheet 1',function($sheet){
-                $data = pt_raw_data::leftjoin('tag','tag.id','=','pt_raw_data.tag')->leftjoin('tag_index','tag_index.tag_id','=','tag.id')->leftjoin('PR_table','PR_table.tag_index_placement','=','tag_index.final_placement_name')->leftjoin('io_product','io_product.final_placement_tag','=','PR_table.tag_index_placement')->get();
+                $data = pt_raw_data::leftjoin('tag','tag.id','=','pt_raw_data.tag')
+                        ->leftjoin('tag_index','tag_index.tag_id','=','tag.id')
+                        ->leftjoin('PR_table','PR_table.tag_index_placement','=','tag_index.final_placement_name')
+                        ->leftjoin('io_product','io_product.final_placement_tag','=','PR_table.tag_index_placement')
+                        ->get();
                 foreach ($data as $key => $value) {
                     $value->date = Carbon::parse($value->date)->format('Y-m-d');
                     $final[] = array(
@@ -359,8 +374,8 @@ class ReportingController extends Controller
             $miss_ids = array_diff($pt_ids, $tagIds) ; /* placement tag not exist in tag_index */
 
             $miss_values = pr_table::where('io_publisher_name', '=', '')->orWhereNull('io_publisher_name')
-                        ->orWhereNull('product_name', '=', '')->orWhereNull('product_name')
-                        ->orWhereNull('actual_ad_unit', '=', '')->orWhereNull('actual_ad_unit')
+                        ->orWhere('product_name', '=', '')->orWhereNull('product_name')
+                        ->orWhere('actual_ad_unit', '=', '')->orWhereNull('actual_ad_unit')
                         ->pluck('tag_index_placement'); /* exist in pr_table but empty values */
 
             $empty_id_arr = tag_index::whereIn('final_placement_name',$miss_values)->get(['tag_id'])->toArray();
@@ -374,16 +389,16 @@ class ReportingController extends Controller
             $tag_index_placement = PR_table::distinct()->pluck('tag_index_placement')->toArray();
             $final_placement_tag = io_product::distinct()->pluck('final_placement_tag')->toArray();
             $miss_values = io_product::where('deal_type', '=', '')->orWhereNull('deal_type')
-                        ->orWhereNull('parent_publisher', '=', '')->orWhereNull('parent_publisher')
-                        ->orWhereNull('date_of_io_creation', '=', '')->orWhereNull('date_of_io_creation')
-                        ->orWhereNull('parent_publisher', '=', '')->orWhereNull('parent_publisher')
-                        ->orWhereNull('ym_manager', '=', '')->orWhereNull('ym_manager')
-                        ->orWhereNull('publisher_url', '=', '')->orWhereNull('publisher_url')
-                        ->orWhereNull('publisher_category', '=', '')->orWhereNull('publisher_category')
-                        ->orWhereNull('country_origin', '=', '')->orWhereNull('country_origin')
-                        ->orWhereNull('language', '=', '')->orWhereNull('language')
-                        ->orWhereNull('business_name', '=', '')->orWhereNull('business_name')
-                        ->orWhereNull('billing_currency', '=', '')->orWhereNull('billing_currency')
+                        ->orWhere('parent_publisher', '=', '')->orWhereNull('parent_publisher')
+                        ->orWhere('date_of_io_creation', '=', '')->orWhereNull('date_of_io_creation')
+                        ->orWhere('parent_publisher', '=', '')->orWhereNull('parent_publisher')
+                        ->orWhere('ym_manager', '=', '')->orWhereNull('ym_manager')
+                        ->orWhere('publisher_url', '=', '')->orWhereNull('publisher_url')
+                        ->orWhere('publisher_category', '=', '')->orWhereNull('publisher_category')
+                        ->orWhere('country_origin', '=', '')->orWhereNull('country_origin')
+                        ->orWhere('language', '=', '')->orWhereNull('language')
+                        ->orWhere('business_name', '=', '')->orWhereNull('business_name')
+                        ->orWhere('billing_currency', '=', '')->orWhereNull('billing_currency')
                         ->pluck('final_placement_tag'); /* placement tag exist in io_product null values */
             $miss_placement = array_diff($tag_index_placement, $final_placement_tag); /* exist in pr_table but not in io_product */
             
@@ -392,6 +407,19 @@ class ReportingController extends Controller
                 $miss_io = io_product::whereIn('final_placement_tag',$miss_values)->get();
             }
             return $miss_io;
+        }
+        else if($table == "country"){
+            $countries = country::where('analytics_country_group','=', '')->orWhereNull('analytics_country_group')
+                        ->orWhere('deal_country_group', '=', '')->orWhereNull('deal_country_group')
+                        ->distinct()->pluck('country_name');
+            $miss_countries = country::whereIn('country_name',$countries)->get();
+            return $miss_countries;
+        }
+        else if($table == 'device'){
+            $device = device::where('device_group','=', '')->orWhereNull('device_group')
+                        ->distinct()->pluck('device_name');
+            $miss_device = device::whereIn('device_name',$device)->get();
+            return $miss_device;
         }
     }
     public function download_miss_data_excel($type){
@@ -432,20 +460,57 @@ class ReportingController extends Controller
             case 'io_product':
                Excel::create('io-data', function($excel) {
                     $excel->sheet('Sheet 1',function($sheet){
-
-                        
                         $miss_placement = $this->task('io_product');
-
-                        for ($i=0; $i < count($miss_placement); $i++) { 
-
+                        foreach ($miss_placement as $key => $value) {
                             $final[] = array(
-                                $miss_placement[$i],
-                                "","","","","","","","","","",""
+                                $value->final_placement_tag,
+                                $value->deal_type,
+                                $value->date_of_io_creation,
+                                $value->publisher_manager,
+                                $value->ym_manager,
+                                $value->publisher_url,
+                                $value->publisher_category,
+                                $value->country_origin,
+                                $value->language,
+                                $value->business_name,
+                                $value->billing_currency
                             );
                         }
-
                         $sheet->fromArray($final, null, 'A1', false, false);
                         $headings = array('Final Placement name','Deal Type','Date of IO creation','Publisher Manager','YM Manager','Publisher Url','Publisher Category','Country of Origin','language','Business Name','Billing Currency');
+                        $sheet->prependRow(1, $headings);
+                    });
+                })->export('xlsx');
+                break;
+            case 'country':
+                Excel::create('country', function($excel) {
+                    $excel->sheet('Sheet 1',function($sheet){
+                        $miss = $this->task('country');
+                        foreach ($miss as $key => $value) {
+                            $final[] = array(
+                                $value->country_name,
+                                $value->analytics_country_group,
+                                $value->deal_country_group
+                            );
+                        }
+                        $sheet->fromArray($final, null, 'A1', false, false);
+                        $headings = array('Country Name','Analytics Country Group','Deal Country Group');
+                        $sheet->prependRow(1, $headings);
+                    });
+                })->export('xlsx');
+                break;
+            case 'device':
+                Excel::create('device', function($excel) {
+                    $excel->sheet('Sheet 1',function($sheet){
+                        $miss = $this->task('device');
+                        foreach ($miss as $key => $value) {
+                            $final[] = array(
+                                $value->device_name,
+                                $value->device_group
+                            );
+                        }
+                        $sheet->fromArray($final, null, 'A1', false, false);
+                        $headings = array('Device Name','Device Group');
                         $sheet->prependRow(1, $headings);
                     });
                 })->export('xlsx');
@@ -464,5 +529,91 @@ class ReportingController extends Controller
         if($date)
             $date = Carbon::parse($date)->format('d M Y');
         return $date;
+    }
+    public function defaultTemplates($type){
+        switch ($type) {
+            case 'tags':                
+                Excel::create('tags', function($excel) {
+                    $excel->sheet('Sheet 1',function($sheet){
+                        $final[] = array('','','','','','','','','','','','');
+                        $sheet->fromArray($final, null, 'A1', false, false);
+                        $headings = array('Date','Site Name','Tag Id','Tag Name','Ad unit Size','Country','Device','Buyer','AdServer Impressions','SSP Impressions','Filled Impressions','Gross Revenue');
+                        $sheet->prependRow(1, $headings);
+                    });
+                })->export('xlsx');                
+                break;
+            case 'PR':
+                Excel::create('Io Publisher', function($excel) {
+                    $excel->sheet('Sheet 1',function($sheet){
+                        $final[] = array('','','','');
+                        $sheet->fromArray($final, null, 'A1', false, false);
+                        $headings = array('Final Placement Tag','Io Publisher Name','Product Name','Actual AdUnit');
+                        $sheet->prependRow(1, $headings);
+                    });
+                })->export('xlsx');
+                break;
+            case 'io_product':
+                Excel::create('Publisher Manager', function($excel) {
+                    $excel->sheet('Sheet 1',function($sheet){
+                        $final[] = array('','','','','','','','','','','','');
+                        $sheet->fromArray($final, null, 'A1', false, false);
+                        $headings = array('Final Placement name','Deal Type','Date of IO creation','Publisher Manager','YM Manager','Publisher Url','Publisher Category','Country of Origin','language','Business Name','Billing Currency');
+                        $sheet->prependRow(1, $headings);
+                    });
+                })->export('xlsx');
+                break;
+            case 'country':
+                Excel::create('Country', function($excel) {
+                    $excel->sheet('Sheet 1',function($sheet){
+                        $final[] = array('','','');
+                        $sheet->fromArray($final, null, 'A1', false, false);
+                        $headings = array('Country Name','Analytics Country Group','Deal Country Group');
+                        $sheet->prependRow(1, $headings);
+                    });
+                })->export('xlsx');
+                break;
+            case 'device':
+                Excel::create('Device', function($excel) {
+                    $excel->sheet('Sheet 1',function($sheet){
+                        $final[] = array('','');
+                        $sheet->fromArray($final, null, 'A1', false, false);
+                        $headings = array('Device Name','Device Group');
+                        $sheet->prependRow(1, $headings);
+                    });
+                })->export('xlsx');
+                break;
+            default:
+                # code...
+                break;
+        }
+    }
+    public function getFinalPR_Report(Request $request){
+       // dd($request->all());
+        
+        Excel::create('Io Publisher', function($excel) use($request){
+            $excel->sheet('Sheet 1',function($sheet) use($request){
+                if(isset($request->control_1)){
+                    $columns = $request->control_1;
+                }
+                else{
+                    $columns = null;
+                }
+                $data = pt_raw_data::leftjoin('tag','tag.id','=','pt_raw_data.tag')
+                    ->leftjoin('tag_index','tag_index.tag_id','=','tag.id')
+                    ->leftjoin('PR_table','PR_table.tag_index_placement','=','tag_index.final_placement_name')
+                    ->leftjoin('io_product','io_product.final_placement_tag','=','PR_table.tag_index_placement')
+                    ->get($columns);
+                $final = array();
+                foreach ($data as $key => $value) {
+                    for ($i=0; $i < count($columns); $i++) { 
+                       array_push($final, $value->columns[$i]);
+                    }
+                }
+                dd($final);
+                $sheet->fromArray($final, null, 'A1', false, false);
+                $headings = array('Final Placement Tag','Io Publisher Name','Product Name','Actual AdUnit');
+                $sheet->prependRow(1, $headings);
+            });
+        })->export('xlsx');
     }
 }

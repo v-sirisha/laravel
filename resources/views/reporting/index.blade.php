@@ -2,6 +2,9 @@
 @section('action_title')
 Profitability Report Database
 @stop
+@section('css')
+<link rel="stylesheet" type="text/css" href="{{asset('css/jquery.ultraselect.min.css')}}">
+@stop
 @section('header')
 	@include('reporting.header')
 @stop
@@ -39,10 +42,10 @@ Profitability Report Database
 			@if($io_miss)
 				<p><span class='glyphicon glyphicon-warning-sign'></span>&nbsp;  Publisher Details Table is incomplete</p>
 			@endif
-			@if(isset($country))
+			@if(count($device) > 0)
 				<p><span class='glyphicon glyphicon-warning-sign'></span>&nbsp;  Device Type Lookup Table is incomplete</p>
 			@endif
-			@if(isset($device))
+			@if(count($country) > 0)
 				<p><span class='glyphicon glyphicon-warning-sign'></span>&nbsp;  Country Group Lookup Table is incomplete</p>
 			@endif
 		</div>
@@ -51,35 +54,91 @@ Profitability Report Database
 			@if($pr_miss)
 				<div class="row">
 					<p class="col-md-4">Parent Placement</p>
-					<p class="col-md-4"><a href="{{url('update/PR')}}">Update Onscreen </a></p>
-					<p class="col-md-4"><a href="{{url('download-excel/PR')}}">Update in Excel</a></p>
+					<p class="col-md-4 text-center "><a href="{{url('update/PR')}}">Update Onscreen </a></p>
+					<p class="col-md-4 text-right"><a href="{{url('download-excel/PR')}}">Update in Excel</a></p>
 				</div>
 			@endif
 			@if($io_miss)
 				<div class="row">
 					<p class="col-md-4">Parent Publisher</p>
-					<p class="col-md-4"><a href="{{url('update/io_product')}}">Update Onscreen</a></p>
-					<p class="col-md-4"><a href="{{url('download-excel/io_product')}}">Update in Excel</a></p>
+					<p class="col-md-4 text-center"><a href="{{url('update/io_product')}}">Update Onscreen</a></p>
+					<p class="col-md-4  text-right"><a href="{{url('download-excel/io_product')}}">Update in Excel</a></p>
 				</div>
 			@endif
-			<div class="row">
-				<p class="col-md-4">Country Group</p>
-				<p class="col-md-4"><a href="{{url('update/country')}}"> Update Onscreen</a></p>
-				<p class="col-md-4"><a href="{{url('download-excel/country')}}">Update in Excel</a></p>
-			</div>
-			<div class="row">
-				<p class="col-md-4">Device Type</p>
-				<p class="col-md-4"><a href="{{url('update/device')}}">Update Onscreen</a></p>
-				<p class="col-md-4"><a href="{{url('download-excel/device')}}">Update in Excel</a></p>
-			</div>
+			@if(count($country) > 0)
+				<div class="row">
+					<p class="col-md-4">Country Group</p>
+					<p class="col-md-4 text-center"><a href="{{url('update/country')}}"> Update Onscreen</a></p>
+					<p class="col-md-4  text-right"><a href="{{url('download-excel/country')}}">Update in Excel</a></p>
+				</div>
+			@endif
+			@if(count($device)>0)
+				<div class="row">
+					<p class="col-md-4">Device Type</p>
+					<p class="col-md-4 text-center"><a href="{{url('update/device')}}">Update Onscreen</a></p>
+					<p class="col-md-4  text-right"><a href="{{url('download-excel/device')}}">Update in Excel</a></p>
+				</div>
+			@endif
 		</div>
 	</div>
-	<div class="col-md-4 col-sm-4 col-xs-12 subsection"></div>
+	<div class="col-md-4 col-sm-4 col-xs-12 subsection pr-download">
+		<h5 class='text-center'>DOWNLOAD REPORTS</h5>
+		<div class="row">
+			<form action="{{url('exportdata-excel')}}">
+				<p class="col-md--12 col-sm-12 col-xs-12">Date Range</p>
+				<div class="form-group col-md-6 col-sm-6 col-xs-6">
+					<input name="start_date" class="form-control datepicker" placeholder="Start date" required>
+				</div>
+				<div class="form-group col-md-6 col-sm-6 col-xs-6 paddingleft">
+					<input name="end_date" class="form-control datepicker" placeholder="End date" required>
+				</div>
+				<p class="col-md-12">Select Columns</p>
+				<div class="form-group col-md-12 col-sm-12 col-xs-12">
+					<select id="control_1" name="control_1[]" multiple="multiple" size="5">
+						@foreach($columns as $column)
+							<option value="{{$column}}">{{$column}}</option>
+						@endforeach
+					</select>
+				</div>
+				<p class="col-md--12 col-sm-12 col-xs-12">Filters</p>
+				<div class="form-group col-md-6 col-sm-6 col-xs-6">
+					<select name="io_publisher" class="form-control" placeholder="Parent Publisher" id='publisherSel'>
+						@if(count($parent_publishers) > 0)
+							@foreach($parent_publishers as $publisher)
+								<option value="{{$publisher}}">{{$publisher}}</option>
+							@endforeach
+						@endif
+					</select>
+				</div>
+				<div class="form-group col-md-6 col-sm-6 col-xs-6">
+					<select name="product_name" class="form-control" placeholder='Product' id="productSel">
+						@if(count($product_names) > 0)
+							@foreach($product_names as $publisher)
+								<option value="{{$publisher}}">{{$publisher}}</option>
+							@endforeach
+						@endif
+					</select>
+				</div>
+				<div class="form-group col-md-6 col-sm-6 col-xs-6">
+					<select name="ym_manager" class="form-control" placeholder='YM Maanager' id="managerSel">
+						@if(count($ym_managers) > 0)
+							@foreach($ym_managers as $publisher)
+								<option value="{{$publisher}}">{{$publisher}}</option>
+							@endforeach
+						@endif
+					</select>
+				</div>
+				<div class="form-group col-md-6 col-sm-6 col-xs-6"><button class="btn btn-warning" type="submit">Get Report</button></div>
+			</form>
+			
+		</div>
+	</div>
 @stop
 @section('footer')
 	@include('reporting.footer')
 @stop
 @section('script')
+<script type="text/javascript" src="{{asset('js/jquery.ultraselect.min.js')}}"></script>
 	<script type="text/javascript">
 		var Platform_names_arr = ['AdTag','Rubicon','AdXTag','AdXDynamic','OpenX','PubMatic','PulsePoint-Dir','PulsePoint-FP','Sovrn','Matomy','MobFox'];
 		var ad_unit = ['728x90','300x250','300x50','320x50','160x600','120x600','300x600','VAST','728x90_1','728x90_2','728x90_3','300x250_1','300x250_2','300x250_3','160x600_LHS','160x600_RHS'];
@@ -101,6 +160,19 @@ Profitability Report Database
 			});
 			$('#table_name').select2('val','all');
 			$('.datepicker').datepicker();
+			$('#publisherSel').select2({
+				placeholder:"Select Publisher Name",
+			});
+			$('#publisherSel').select2('val','all');
+			$('#productSel').select2({
+				placeholder:"Select Product Name",
+			});
+			$('#productSel').select2('val','all');
+			$('#managerSel').select2({
+				placeholder:"Select Manager Name",
+			});
+			$('#managerSel').select2('val','all');
+			$("#control_1").ultraselect();
 		});
 		$('.platform_sel').on('change',function(){
 			$('#pt_modified').text('');

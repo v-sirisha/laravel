@@ -34,7 +34,7 @@ Update Io Product Details
 					@endforeach
 				</tbody>
 			</table>
-		@else
+		@elseif($type == 'io_product')
 			<table class="table table-bordered" id="yr_table">
 				<thead>
 					<th>Placement Tag</th>
@@ -69,6 +69,44 @@ Update Io Product Details
 					@endforeach
 				</tbody>
 			</table>
+		@elseif($type == 'country')
+			<table class="table table-bordered" id="country">
+				<thead>
+					<tr>
+						<th>Country</th>
+						<th>Analytic Country Group</th>
+						<th>Deal Country Group</th>
+					</tr>					
+				</thead>
+				<tbody>					
+					@foreach($data as $key=>$val)
+						<tr>
+							<td>{{$val->country_name}}</td>
+							<td>{{$val->analytics_country_group}}</td>
+							<td>{{$val->deal_country_group}}</td>
+						</tr>
+					@endforeach
+					</tr>
+				</tbody>
+			</table>
+		@elseif($type == 'device')
+			<table class="table table-bordered" id="country">
+				<thead>
+					<tr>
+						<th>Device Name</th>
+						<th>Device Group</th>
+					</tr>					
+				</thead>
+				<tbody>					
+					@foreach($data as $key=>$val)
+						<tr>
+							<td>{{$val->device_name}}</td>
+							<td>{{$val->device_group}}</td>
+						</tr>
+					@endforeach
+					</tr>
+				</tbody>
+			</table>
 		@endif
 	</div>
 @stop
@@ -82,6 +120,8 @@ Update Io Product Details
 			$('#pr_table_length').after('<span class="table_label">Update PR Data</span>');
 			$('#yr_table').dataTable();
 			$('#yr_table_length').after('<span class="table_label">Update Io Product Details</span>');
+			$('#country').dataTable();
+			$('#country_table_length').after('<span class="table_label">Update Country Details</span>');
 		});
 	</script>
 @stop
