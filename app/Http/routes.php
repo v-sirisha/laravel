@@ -60,3 +60,4 @@ Route::get('/update/{type}','ReportingController@updateon_screen');
 Route::get('/download-excel/{type}','ReportingController@download_miss_data_excel');
 Route::get('get-lastmodified-date/{pt_name}','ReportingController@getEndDate');
 Route::get('downloads/{type}','ReportingController@defaultTemplates');
+Route::get('/update-row','ReportingController@onScreenAction');

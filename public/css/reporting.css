@@ -8,7 +8,9 @@ body{background-color: #eee;font-size: 12px;}
 .content_wrapper{margin: 30px 0;}
 .subsection:not(:last-child){border-right: 1px solid #dbdbdb;}
 #pr_table,#yr_table{font-size: 10px;}
-#pr_table tbody td,#yr_table tbody td{padding: 5px 3px;}
+#pr_table tbody td,#yr_table tbody td,#country tbody td,#device tbody td{padding: 0;background: rgba(238, 238, 238, 0.47);}
+.disabled{background: rgba(238, 238, 238, 0.47);}
+#pr_table input,#yr_table input,#country input,#device input{width: 100%;border:0px;}
 span.table_label {
     text-transform: uppercase;
     font-size: 16px;
@@ -39,3 +41,5 @@ p#pt_modified {
 .dropdown-menu>li>a,.nav li a{color: #B58030;}
 ul.dropdown-menu{background-color: #333333;}
 .select.active,.#control_1,.ultraselectWrapper{border-radius: 4px 4px 0 0;}
+.cursorCls{cursor: pointer;}
+#yr_table thead th:first-child{width: 150px;}
