@@ -16,10 +16,10 @@ class CreateIoProduct extends Migration
             $table->increments('id');
             $table->string('final_placement_tag');
             $table->string('deal_type');
-            $table->string('parent_plusher');
+            $table->string('parent_publisher');
             $table->string('date_of_io_creation');
             $table->string('publisher_manager');
-            $table->string('ym_manger');
+            $table->string('ym_manager');
             $table->string('publisher_url');
             $table->string('publisher_category');
             $table->string('country_origin');

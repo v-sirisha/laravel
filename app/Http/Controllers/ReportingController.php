@@ -410,6 +410,7 @@ class ReportingController extends Controller
             $miss_placement = array_diff($tag_index_placement, $final_placement_tag); /* exist in pr_table but not in io_product */
             
             /* Merge miss_placement and miss values and pass to loop */
+            $miss_io = null;
             if(count($miss_values) > 0){
                 $miss_io = io_product::whereIn('final_placement_tag',$miss_values)->get();
             }
