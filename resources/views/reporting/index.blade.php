@@ -10,7 +10,8 @@ Profitability Report Database
 @stop
 @section('content')
 	<div class="col-md-3 col-sm-3 col-xs-12 subsection">
-		<div class="col-md-12 padding0" id="pt_upload_div">
+		
+		<div class="col-md-12 padding0">
 			<h5 class="text-center">UPLOAD RAW DATA</h5>
 			<form action="{{url('/store-data/rubicon')}}" class="col-md-12 col-xs-12 col-sm-12" enctype="multipart/form-data" method="POST">
 				{{ csrf_field() }}
@@ -22,64 +23,19 @@ Profitability Report Database
 				<div class="form-group text-center"><button type="submit" class="btn btn-warning">Upload</button></div>
 			</form>
 		</div>
-		<div class="col-md-12 col-xs-12 col-sm-12 padding0">
-			<h5 class="text-center">UPLOAD LOOKUP TABLES</h5>
-			<form action="{{url('/importToData')}}" class="col-md-12" enctype="multipart/form-data" method="POST">
-				<div class="form-group">
-					<select type="text" class="form-control" name='table_name' placeholder='Select Lookup Table Name' id="table_name">
-					</select>
-				</div>
-				<div class="form-group"><input type="file" class="form-control" name='file' ></div>
-				<div class="form-group text-center"><button type="submit" class="btn btn-warning">Upload</button></div>
-			</form>
-		</div>
-	</div>
-	<div class="col-md-5 col-sm-5 col-xs-12 subsection">
-		<div class="col-md-12 col-xs-12 col-sm-12 padding0 warning_div">
-			@if($pr_miss)
-				<p><span class='glyphicon glyphicon-warning-sign'></span>&nbsp;  Parent Placement Lookup Table is incomplete</p>
-			@endif
-			@if($io_miss)
-				<p><span class='glyphicon glyphicon-warning-sign'></span>&nbsp;  Publisher Details Table is incomplete</p>
-			@endif
-			@if(count($device) > 0)
-				<p><span class='glyphicon glyphicon-warning-sign'></span>&nbsp;  Device Type Lookup Table is incomplete</p>
-			@endif
-			@if(count($country) > 0)
-				<p><span class='glyphicon glyphicon-warning-sign'></span>&nbsp;  Country Group Lookup Table is incomplete</p>
-			@endif
-		</div>
-		<div class="col-ms-12 col-xs-12 col-sm-12 padding0">
-			<h5 class="text-center">UPDATE LOOKUPS</h5>
-			@if($pr_miss)
-				<div class="row">
-					<p class="col-md-4">Parent Placement</p>
-					<p class="col-md-4 text-center "><a href="{{url('update/PR')}}">Update Onscreen </a></p>
-					<p class="col-md-4 text-right"><a href="{{url('download-excel/PR')}}">Update in Excel</a></p>
-				</div>
-			@endif
-			@if($io_miss)
-				<div class="row">
-					<p class="col-md-4">Parent Publisher</p>
-					<p class="col-md-4 text-center"><a href="{{url('update/io_product')}}">Update Onscreen</a></p>
-					<p class="col-md-4  text-right"><a href="{{url('download-excel/io_product')}}">Update in Excel</a></p>
-				</div>
-			@endif
-			@if(count($country) > 0)
-				<div class="row">
-					<p class="col-md-4">Country Group</p>
-					<p class="col-md-4 text-center"><a href="{{url('update/country')}}"> Update Onscreen</a></p>
-					<p class="col-md-4  text-right"><a href="{{url('download-excel/country')}}">Update in Excel</a></p>
-				</div>
-			@endif
-			@if(count($device)>0)
-				<div class="row">
-					<p class="col-md-4">Device Type</p>
-					<p class="col-md-4 text-center"><a href="{{url('update/device')}}">Update Onscreen</a></p>
-					<p class="col-md-4  text-right"><a href="{{url('download-excel/device')}}">Update in Excel</a></p>
-				</div>
-			@endif
-		</div>
+		@if(Auth::user())
+			<div class="col-md-12 col-xs-12 col-sm-12 padding0" id="pt_upload_div">
+				<h5 class="text-center">UPLOAD LOOKUP TABLES</h5>
+				<form action="{{url('importToData')}}" class="col-md-12" enctype="multipart/form-data" method="POST">
+					<div class="form-group">
+						<select type="text" class="form-control" name='table_name' placeholder='Select Lookup Table Name' id="table_name">
+						</select>
+					</div>
+					<div class="form-group"><input type="file" class="form-control" name='file' ></div>
+					<div class="form-group text-center"><button type="submit" class="btn btn-warning">Upload</button></div>
+				</form>
+			</div>
+		@endif
 	</div>
 	<div class="col-md-4 col-sm-4 col-xs-12 subsection pr-download">
 		<h5 class='text-center'>DOWNLOAD REPORTS</h5>
@@ -95,8 +51,8 @@ Profitability Report Database
 				<p class="col-md-12">Select Columns</p>
 				<div class="form-group col-md-12 col-sm-12 col-xs-12">
 					<select id="control_1" name="control_1[]" multiple="multiple" size="5">
-						@foreach($columns as $column)
-							<option value="{{$column}}">{{$column}}</option>
+						@foreach($columns as $key=>$column)
+							<option value="{{$key}}">{{$column}}</option>
 						@endforeach
 					</select>
 				</div>
@@ -133,6 +89,55 @@ Profitability Report Database
 			
 		</div>
 	</div>
+	<div class="col-md-5 col-sm-5 col-xs-12 subsection">
+		@if(Auth::user())
+		<div class="col-md-12 col-xs-12 col-sm-12 padding0 warning_div">
+			@if($pr_miss)
+				<p><span class='glyphicon glyphicon-warning-sign'></span>&nbsp;  Parent Placement Lookup Table is incomplete</p>
+			@endif
+			@if($io_miss > 0)
+				<p><span class='glyphicon glyphicon-warning-sign'></span>&nbsp;  Publisher Details Table is incomplete</p>
+			@endif
+			@if(count($device) > 0)
+				<p><span class='glyphicon glyphicon-warning-sign'></span>&nbsp;  Device Type Lookup Table is incomplete</p>
+			@endif
+			@if(count($country) > 0)
+				<p><span class='glyphicon glyphicon-warning-sign'></span>&nbsp;  Country Group Lookup Table is incomplete</p>
+			@endif
+		</div>
+		<div class="col-ms-12 col-xs-12 col-sm-12 padding0">
+			<h5 class="text-center">UPDATE LOOKUPS</h5>
+			@if($pr_miss)
+				<div class="row">
+					<p class="col-md-4">Parent Placement</p>
+					<p class="col-md-4 text-center "><a href="{{url('update/PR')}}">Update Onscreen </a></p>
+					<p class="col-md-4 text-right"><a href="{{url('download-excel/PR')}}">Update in Excel</a></p>
+				</div>
+			@endif
+			@if($io_miss > 0)
+				<div class="row">
+					<p class="col-md-4">Parent Publisher</p>
+					<p class="col-md-4 text-center"><a href="{{url('update/io_product')}}">Update Onscreen</a></p>
+					<p class="col-md-4  text-right"><a href="{{url('download-excel/io_product')}}">Update in Excel</a></p>
+				</div>
+			@endif
+			@if(count($country) > 0)
+				<div class="row">
+					<p class="col-md-4">Country Group</p>
+					<p class="col-md-4 text-center"><a href="{{url('update/country')}}"> Update Onscreen</a></p>
+					<p class="col-md-4  text-right"><a href="{{url('download-excel/country')}}">Update in Excel</a></p>
+				</div>
+			@endif
+			@if(count($device)>0)
+				<div class="row">
+					<p class="col-md-4">Device Type</p>
+					<p class="col-md-4 text-center"><a href="{{url('update/device')}}">Update Onscreen</a></p>
+					<p class="col-md-4  text-right"><a href="{{url('download-excel/device')}}">Update in Excel</a></p>
+				</div>
+			@endif
+		</div>
+		@endif
+	</div>
 @stop
 @section('footer')
 	@include('reporting.footer')
@@ -142,7 +147,8 @@ Profitability Report Database
 	<script type="text/javascript">
 		var Platform_names_arr = ['AdTag','Rubicon','AdXTag','AdXDynamic','OpenX','PubMatic','PulsePoint-Dir','PulsePoint-FP','Sovrn','Matomy','MobFox'];
 		var ad_unit = ['728x90','300x250','300x50','320x50','160x600','120x600','300x600','VAST','728x90_1','728x90_2','728x90_3','300x250_1','300x250_2','300x250_3','160x600_LHS','160x600_RHS'];
-		var table_name = ['Parent Placement','Publisher Details','Country Group','Device Type'];
+		//var table_name = ['Parent Placement','Publisher Details','Country Group','Device Type'];
+		var table_name = [{ id: 'PR', text: 'Parent Placement' }, { id: 'io_product', text: 'Publisher Details' }, { id: 'country', text: 'Country Group' }, { id: 'device', text: 'Device Type' }];
 		$(document).ready(function(){
 			$('.platform_sel').select2({
 				placeholder:'Select Platform',

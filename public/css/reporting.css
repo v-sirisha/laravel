@@ -21,7 +21,7 @@ span.table_label {
 #yr_table_wrapper span.table_label{margin-left: 28%;}
 .table_wrapper{overflow: auto;max-width: 100%;}
 
-#pt_upload_div{border-bottom: 1px solid #ccc;margin-bottom: 10px;}
+#pt_upload_div{border-top: 1px solid #ccc;margin-bottom: 10px;}
 .warning_div p{color: #d43a36;font-size: 12px;margin-bottom: 0px;}
 .pmargin{margin-bottom: 0px;}
 p#pt_modified {
@@ -43,3 +43,6 @@ ul.dropdown-menu{background-color: #333333;}
 .select.active,.#control_1,.ultraselectWrapper{border-radius: 4px 4px 0 0;}
 .cursorCls{cursor: pointer;}
 #yr_table thead th:first-child{width: 150px;}
+#loginform{
+    color: #ec971f;
+}

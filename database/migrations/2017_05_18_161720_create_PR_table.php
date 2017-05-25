@@ -17,7 +17,7 @@ class CreatePRTable extends Migration
             $table->string('tag_index_placement');
             $table->string('io_publisher_name');
             $table->string('product_name');
-            $table->string('actual_ad_unit');
+            $table->string('io_size');
             $table->timestamps();
         });
     }

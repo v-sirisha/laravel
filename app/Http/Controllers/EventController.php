@@ -39,7 +39,7 @@ class EventController extends Controller
 {
     use DispatchesJobs;
     protected $AuthUser, $product,$pr, $pt,$pt_dates;
-    public function _construct(User $user,Create_Product $prod, platforms $pt, platform_dates $pt_dates, PR $pr){
+    public function __construct(User $user,Create_Product $prod, platforms $pt, platform_dates $pt_dates, PR $pr){
     	$this->AuthUser = Auth::user();
     	$this->product = $prod;
         $this->pt = $pt;

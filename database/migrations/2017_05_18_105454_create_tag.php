@@ -18,7 +18,6 @@ class CreateTag extends Migration
             $table->string('site_name');
             $table->string('tag_id');
             $table->string('tag_name');
-            $table->string('tag');
             $table->timestamps();
         });
     }

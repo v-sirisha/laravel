@@ -15,9 +15,10 @@ class CreateIoProduct extends Migration
         Schema::create('io_product', function (Blueprint $table) {
             $table->increments('id');
             $table->string('final_placement_tag');
+            $table->string('ad_unit_size');
             $table->string('deal_type');
             $table->string('parent_publisher');
-            $table->string('date_of_io_creation');
+            $table->timestamp('date_of_io_creation');
             $table->string('publisher_manager');
             $table->string('ym_manager');
             $table->string('publisher_url');

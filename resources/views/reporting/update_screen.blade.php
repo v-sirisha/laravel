@@ -15,10 +15,10 @@ Update Io Product Details
 						<th>Site Name</th>
 						<th>Tag Id</th>
 						<th>Tag Name</th>
-						<th>Final Placement name</th>
+						<th>Size</th>
 						<th>Io publisher Name</th>
 						<th>Product Name</th>
-						<th>Actual ad unit</th>
+						<th>Io Size</th>
 						<th>Edit</th>
 					</thead>
 					<tbody>
@@ -30,10 +30,10 @@ Update Io Product Details
 									<td><input type='text' name="site_name" value="{{$val->site_name}}" disabled></td>
 									<td><input type='text' name="tag_id" value="{{$val->tag_id}}" disabled></td>
 									<td><input type="text" name="tag_name" value="{{$val->tag_name}}" disabled></td>
-									<td><input type="text" name='final_placement_name' value="{{$val->final_placement_name}}" disabled></td>
+									<td><input type="text" name='size' value="{{$val->size}}" disabled></td>
 									<td><input type="text" name="io_publisher_name" value="{{$val->io_publisher_name}}" disabled></td>
 									<td><input type="text" name="product_name" value="{{$val->product_name}}" disabled></td>
-									<td><input type='text' name="actual_ad_unit" value="{{$val->actual_ad_unit}}" disabled></td>
+									<td><input type='text' name="io_size" value="{{$val->io_size}}" disabled></td>
 									<td  class="edit cursorCls" data-id = "{{$key}}"><span class="glyphicon glyphicon-edit" data-id="{{$key}}"></span></td>
 								</form>
 							</tr>
@@ -45,27 +45,29 @@ Update Io Product Details
 			</table>
 		@elseif($type == 'io_product')
 			<table class="table table-bordered" id="yr_table">
-				@if(count($data) > 0)
-					<thead>
-						<th>Placement Tag</th>
-						<th>Deal Type</th>
-						<th>Date of Io creation</th>
-						<th>Publisher Manager</th>
-						<th>YM Manager</th>
-						<th>Publisher url</th>
-						<th>Publisher Category</th>
-						<th>Country Origin</th>
-						<th>Language</th>
-						<th>Business Name</th>
-						<th>Billing Currency</th>
-						<th>Edit</th>
-					</thead>
-					<tbody>
-						@foreach($data as $key=>$val)
+				<thead>
+					<th>Placement Tag</th>
+					<th>Ad Unit Size</th>
+					<th>Deal Type</th>
+					<th>Date of Io creation</th>
+					<th>Publisher Manager</th>
+					<th>YM Manager</th>
+					<th>Publisher url</th>
+					<th>Publisher Category</th>
+					<th>Country Origin</th>
+					<th>Language</th>
+					<th>Business Name</th>
+					<th>Billing Currency</th>
+					<th>Edit</th>
+				</thead>
+				<tbody>
+					@if(count($data['io_null_arr']) > 0)
+						@foreach($data['io_null_arr'] as $key=>$val)
 							<tr id="pr{{$key}}">
 								<form id="form{{$key}}">
 									<input type="hidden" name="type" value="io_product">
-									<td><input type="text" name="final_placement_tag" value="{{$val->final_placement_tag}}" readonly></td>
+									<td><input type="text" name="final_placement_tag" value="{{$val->final_placement_name}}" readonly></td>
+									<td><input type="text" name="ad_unit_size" value="{{$val->ad_unit_size}}" readonly></td>
 									<td><input type="text" name="deal_type" value="{{$val->deal_type}}" disabled></td>
 			                        <td><input type="text" name="date_of_io_creation" value="{{$val->date_of_io_creation}}" disabled></td>
 			                        <td><input type="text" name="publisher_manager" value="{{$val->publisher_manager}}" disabled></td>
@@ -80,10 +82,33 @@ Update Io Product Details
 								</form>
 							</tr>
 						@endforeach
-					</tbody>
-				@else
-					<tbody><th class="text-center">YOUR PUBLISHER DATA IS UP TO DATE</th></tbody>
-				@endif
+					@else
+						@if(count($data['io_miss']) > 0)
+							@foreach($data['io_miss'] as $key=>$val)
+								<tr id="pr{{$val}}">
+									<form id="form{{$val}}">
+										<input type="hidden" name="type" value="io_product">
+										<td><input type="text" name="final_placement_name" value="{{$val}}" readonly></td>
+										<td><input type="text" name="ad_unit_size" value="" readonly></td>
+										<td><input type="text" name="deal_type" value="" disabled></td>
+				                        <td><input type="text" name="date_of_io_creation" value="" disabled></td>
+				                        <td><input type="text" name="publisher_manager" value="" disabled></td>
+				                        <td><input type="text" name="ym_manager" value="" disabled></td>
+				                        <td><input type="text" name="publisher_url" value="" disabled></td>
+				                        <td><input type="text" name="publisher_category" value="" disabled></td>
+				                        <td><input type="text" name="country_origin" value="" disabled></td>
+				                        <td><input type="text" name="language" value="" disabled></td>
+				                        <td><input type="text" name="business_name" value="" disabled></td>
+				                        <td><input type="text" name="billing_currency" value="" disabled></td>
+										<td class="edit cursorCls" data-id = "{{$val}}"><span class="glyphicon glyphicon-edit"></span>Edit</td>
+									</form>
+								</tr>
+							@endforeach
+						@else
+							<th class="text-center">YOUR PUBLISHER DATA IS UP TO DATE</th>
+						@endif
+					@endif
+				</tbody>
 			</table>
 		@elseif($type == 'country')
 			<table class="table table-bordered" id="country">

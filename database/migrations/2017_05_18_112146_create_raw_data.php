@@ -16,7 +16,7 @@ class CreateRawData extends Migration
             $table->increments('id');
             $table->timestamp('date');
             $table->string('tag');
-            $table->string('ad_unit');
+            $table->string('size');
             $table->string('device');
             $table->string('country');
             $table->string('buyer');

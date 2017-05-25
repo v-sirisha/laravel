@@ -51,9 +51,6 @@ View::share('cartCount', Cart::count());
 
 Route::get('/','ReportingController@index');
 Route::post('/store-data/{platform}','ReportingController@storeData');
-Route::get('/final-data','ReportingController@getFinalData');
-Route::get('/pr-view','ReportingController@getPRView');
-Route::post('/add-pr','ReportingController@addPRDetails');
 Route::get('/exportdata-excel','ReportingController@getFinalPR_Report');
 Route::post('/importToData','ReportingController@importToDB');
 Route::get('/update/{type}','ReportingController@updateon_screen');
