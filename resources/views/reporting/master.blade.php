@@ -13,13 +13,20 @@
 	</head>
 	<body>
 		<header>
-			@yield('header')
+			<div class="container-fluid">
+				@yield('header')
+			</div>
 		</header>		
-		<section class="col-md-12 col-sm-12 col-xs-12 content_wrapper">
-			@yield('content')
+		<section>
+			<div class="container-fluid content_wrapper">
+				@yield('content')
+			</div>
 		</section>
 		<footer>
-			@yield('footer')
+			<div class="container-fluid">
+				@yield('footer')
+			</div>
+			
 		</footer>
 		<script src="{{asset('js/jquery.min.js')}}"></script>
 		<script src="{{asset('js/bootstrap.min.js')}}"></script>

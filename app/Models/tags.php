@@ -12,12 +12,12 @@ class tags extends Model
     
     public function scopeJoinIndexIo($query)
     {
-        return $query->join('pt_raw_data','pt_raw_data.tag','=','tag.id')
-        			->join('country','country_name','=','country')
-        			->join('device','device_name','=','device')
-        			->join('tag_index', 'tag_index.tag_id', '=', 'tag.id')
-                    ->join('PR_table', 'PR_table.tag_index_placement', '=', 'tag_index.final_placement_name')
-                    ->join('io_product','final_placement_tag','=','final_placement_name');
+        return $query->join('pt_raw_data','tag.id','=','pt_raw_data.tag')
+        			->join('country','pt_raw_data.country','=','country.id')
+        			->join('device','pt_raw_data.device','=','device.id')
+        			->join('tag_index', 'tag.id', '=', 'tag_index.tag_id')
+                    ->join('PR_table', 'tag_index.final_placement_name','=', 'PR_table.tag_index_placement')
+                    ->join('io_product','tag_index.final_placement_name','=','io_product.final_placement_tag');
     }
 }
 

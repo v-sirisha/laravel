@@ -10,7 +10,7 @@ Profitability Report Database
 @stop
 @section('content')
 	<div class="col-md-3 col-sm-3 col-xs-12 subsection">
-		
+		@if(Auth::user())
 		<div class="col-md-12 padding0">
 			<h5 class="text-center">UPLOAD RAW DATA</h5>
 			<form action="{{url('/store-data/rubicon')}}" class="col-md-12 col-xs-12 col-sm-12" enctype="multipart/form-data" method="POST">
@@ -23,7 +23,8 @@ Profitability Report Database
 				<div class="form-group text-center"><button type="submit" class="btn btn-warning">Upload</button></div>
 			</form>
 		</div>
-		@if(Auth::user())
+		@endif
+		@if(Auth::user() && Auth::user()->user_type == 'admin')
 			<div class="col-md-12 col-xs-12 col-sm-12 padding0" id="pt_upload_div">
 				<h5 class="text-center">UPLOAD LOOKUP TABLES</h5>
 				<form action="{{url('importToData')}}" class="col-md-12" enctype="multipart/form-data" method="POST">
@@ -90,52 +91,52 @@ Profitability Report Database
 		</div>
 	</div>
 	<div class="col-md-5 col-sm-5 col-xs-12 subsection">
-		@if(Auth::user())
-		<div class="col-md-12 col-xs-12 col-sm-12 padding0 warning_div">
-			@if($pr_miss)
-				<p><span class='glyphicon glyphicon-warning-sign'></span>&nbsp;  Parent Placement Lookup Table is incomplete</p>
-			@endif
-			@if($io_miss > 0)
-				<p><span class='glyphicon glyphicon-warning-sign'></span>&nbsp;  Publisher Details Table is incomplete</p>
-			@endif
-			@if(count($device) > 0)
-				<p><span class='glyphicon glyphicon-warning-sign'></span>&nbsp;  Device Type Lookup Table is incomplete</p>
-			@endif
-			@if(count($country) > 0)
-				<p><span class='glyphicon glyphicon-warning-sign'></span>&nbsp;  Country Group Lookup Table is incomplete</p>
-			@endif
-		</div>
-		<div class="col-ms-12 col-xs-12 col-sm-12 padding0">
-			<h5 class="text-center">UPDATE LOOKUPS</h5>
-			@if($pr_miss)
-				<div class="row">
-					<p class="col-md-4">Parent Placement</p>
-					<p class="col-md-4 text-center "><a href="{{url('update/PR')}}">Update Onscreen </a></p>
-					<p class="col-md-4 text-right"><a href="{{url('download-excel/PR')}}">Update in Excel</a></p>
-				</div>
-			@endif
-			@if($io_miss > 0)
-				<div class="row">
-					<p class="col-md-4">Parent Publisher</p>
-					<p class="col-md-4 text-center"><a href="{{url('update/io_product')}}">Update Onscreen</a></p>
-					<p class="col-md-4  text-right"><a href="{{url('download-excel/io_product')}}">Update in Excel</a></p>
-				</div>
-			@endif
-			@if(count($country) > 0)
-				<div class="row">
-					<p class="col-md-4">Country Group</p>
-					<p class="col-md-4 text-center"><a href="{{url('update/country')}}"> Update Onscreen</a></p>
-					<p class="col-md-4  text-right"><a href="{{url('download-excel/country')}}">Update in Excel</a></p>
-				</div>
-			@endif
-			@if(count($device)>0)
-				<div class="row">
-					<p class="col-md-4">Device Type</p>
-					<p class="col-md-4 text-center"><a href="{{url('update/device')}}">Update Onscreen</a></p>
-					<p class="col-md-4  text-right"><a href="{{url('download-excel/device')}}">Update in Excel</a></p>
-				</div>
-			@endif
-		</div>
+		@if(Auth::user() && Auth::user()->user_type == 'admin')
+			<div class="col-md-12 col-xs-12 col-sm-12 padding0 warning_div">
+				@if($pr_miss)
+					<p><span class='glyphicon glyphicon-warning-sign'></span>&nbsp;  Parent Placement Lookup Table is incomplete</p>
+				@endif
+				@if($io_miss > 0)
+					<p><span class='glyphicon glyphicon-warning-sign'></span>&nbsp;  Publisher Details Table is incomplete</p>
+				@endif
+				@if(count($device) > 0)
+					<p><span class='glyphicon glyphicon-warning-sign'></span>&nbsp;  Device Type Lookup Table is incomplete</p>
+				@endif
+				@if(count($country) > 0)
+					<p><span class='glyphicon glyphicon-warning-sign'></span>&nbsp;  Country Group Lookup Table is incomplete</p>
+				@endif
+			</div>
+			<div class="col-ms-12 col-xs-12 col-sm-12 padding0">
+				<h5 class="text-center">UPDATE LOOKUPS</h5>
+				@if($pr_miss)
+					<div class="row">
+						<p class="col-md-4">Parent Placement</p>
+						<p class="col-md-4 text-center "><a href="{{url('update/PR')}}">Update Onscreen </a></p>
+						<p class="col-md-4 text-right"><a href="{{url('download-excel/PR')}}">Update in Excel</a></p>
+					</div>
+				@endif
+				@if($io_miss > 0)
+					<div class="row">
+						<p class="col-md-4">Parent Publisher</p>
+						<p class="col-md-4 text-center"><a href="{{url('update/io_product')}}">Update Onscreen</a></p>
+						<p class="col-md-4  text-right"><a href="{{url('download-excel/io_product')}}">Update in Excel</a></p>
+					</div>
+				@endif
+				@if(count($country) > 0)
+					<div class="row">
+						<p class="col-md-4">Country Group</p>
+						<p class="col-md-4 text-center"><a href="{{url('update/country')}}"> Update Onscreen</a></p>
+						<p class="col-md-4  text-right"><a href="{{url('download-excel/country')}}">Update in Excel</a></p>
+					</div>
+				@endif
+				@if(count($device)>0)
+					<div class="row">
+						<p class="col-md-4">Device Type</p>
+						<p class="col-md-4 text-center"><a href="{{url('update/device')}}">Update Onscreen</a></p>
+						<p class="col-md-4  text-right"><a href="{{url('download-excel/device')}}">Update in Excel</a></p>
+					</div>
+				@endif
+			</div>
 		@endif
 	</div>
 @stop

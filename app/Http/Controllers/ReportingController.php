@@ -44,7 +44,7 @@ class ReportingController extends Controller
         $product_names = pr_table::distinct()->pluck('product_name');
         $country = $this->task('country');
         $device = $this->task('device');
-        $gen_col = array('id','created_at','updated_at','tag_index_placement','tag','size','device','country','buyer');
+        $gen_col = array('id','created_at','updated_at','tag_index_placement','tag','size','device','country','buyer','final_placement_tag','final_placement_name');
         $columns = Schema::getColumnListing('pt_raw_data');
         array_unshift($columns, 'platform_name');
         $columns = array_merge($columns,Schema::getColumnListing('PR_table'));
@@ -276,7 +276,7 @@ class ReportingController extends Controller
                                 $data['language'] = $row['language'];
                                 $data['business_name'] = $row['business_name'];
                                 $data['billing_currency'] = $row['billing_currency'];
-
+                                //dd($data);
                                 if($io_product_placementId){
                                     io_product::where('final_placement_tag',$row['final_placement_tag'])->update($data);
                                 }
@@ -342,10 +342,9 @@ class ReportingController extends Controller
             $pr_null_arr = null;
             if(count($total_ids) > 0){
                 $pr_null_arr = tags::whereIn('tag.id',$total_ids)
-                            ->leftjoin('pt_raw_data','tag.id','=','pt_raw_data.id')
                             ->leftjoin('tag_index','tag.id','=','tag_index.tag_id')
                             ->leftjoin('PR_table','tag_index.final_placement_name','=','PR_table.tag_index_placement')
-                            ->get(['tag.*','pt_raw_data.size','tag_index.final_placement_name','PR_table.*']);
+                            ->get(['tag.*','tag_index.final_placement_name','PR_table.*']);
             }
             //dd($pr_null_arr);
             return $pr_null_arr;
@@ -571,12 +570,11 @@ class ReportingController extends Controller
 
         $start_date = Carbon::parse($request->start_date)->format('Y-m-d H:i:00');
         $end_date = Carbon::parse($request->end_date)->format('Y-m-d H:i:00');
-        $data = $this->tags->joinindexio()->whereBetween('date',[$start_date,$end_date])
-                ->groupby('country')->selectRaw('country,sum(adserver_impressions) as total_adserver_impressions,sum(ssp_impressions) as total_ssp_impressions, sum(filled_impressions) as total_filled_impressions')->get();
+        $data = $this->tags->joinindexio()->whereBetween('date',[$start_date,$end_date])->get();
 
-        $countryData = $this->country->sspsum()->groupby('country')->selectRaw('*,country,sum(adserver_impressions) as total_adserver_impressions,sum(ssp_impressions) as total_ssp_impressions, sum(filled_impressions) as total_filled_impressions')->get();;
+        
 
-        dd($countryData);
+        //dd($data);
         if(isset($request->product_name)){
             $data = $data->where('product_name',$request->product_name);
         }
@@ -587,7 +585,7 @@ class ReportingController extends Controller
             $data = $data->where('ym_manager',$request->ym_manager);
         }
         
-        dd($data);
+        //dd($data);
         if(count($data) > 0){
             Excel::create('Io Publisher', function($excel) use($data,$columns){
                 $excel->sheet('Sheet 1',function($sheet) use($data,$columns){
@@ -623,9 +621,9 @@ class ReportingController extends Controller
                         ->where('tag_id',$tag_id)
                         ->where('tag_name',$tag_name)->value('id');
                 $tag_index_id = tag_index::where('tag_id',$id)->get();
-                
+                $final_placement_name = $request->io_publisher_name.'_'.$request->product_name.'_'.$request->io_size;
                 if(count($tag_index_id)>0){
-                    $success = PR_table::where('tag_index_placement',$request->final_placement_name)
+                    $success = PR_table::where('tag_index_placement',$final_placement_name)
                             ->update(['io_publisher_name'=>$request->io_publisher_name,'product_name'=>$request->product_name,'io_size'=>$request->io_size]);
                 }
                 else{

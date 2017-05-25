@@ -39,7 +39,19 @@
                                 @endif
                             </div>
                         </div>
+                        <div class="form-group{{ $errors->has('user_type') ? ' has-error' : '' }}">
+                            <label for="user_type" class="col-md-4 control-label">User Type</label>
 
+                            <div class="col-md-6">
+                                <input id="user_type" type="text" class="form-control" name="user_type" >
+
+                                @if ($errors->has('user_type'))
+                                    <span class="help-block">
+                                        <strong>{{ $errors->first('user_type') }}</strong>
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
                         <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
                             <label for="password" class="col-md-4 control-label">Password</label>
 
@@ -82,3 +94,11 @@
     </div>
 </div>
 @endsection
+@section('script')
+<script type="text/javascript">
+var type = ['admin','adops'];
+    $('#user_type').select2({
+        data:type
+    });
+</script>
+@stop
