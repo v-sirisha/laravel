@@ -314,6 +314,7 @@ class ComposerStaticInit51c194572ba45f21c50c0d95bf7336ac
         'CreateCartDetailsTable' => __DIR__ . '/../..' . '/database/migrations/2016_11_11_122750_create_cart_details_table.php',
         'CreateCartTable' => __DIR__ . '/../..' . '/database/migrations/2016_11_11_122317_create_cart_table.php',
         'CreateCountry' => __DIR__ . '/../..' . '/database/migrations/2017_05_16_151921_create_country.php',
+        'CreateDealRate' => __DIR__ . '/../..' . '/database/migrations/2017_05_31_114513_create_deal_rate.php',
         'CreateDevice' => __DIR__ . '/../..' . '/database/migrations/2017_05_16_152255_create_device.php',
         'CreateGuestTable' => __DIR__ . '/../..' . '/database/migrations/2016_11_08_120906_create_guest_table.php',
         'CreateIoProduct' => __DIR__ . '/../..' . '/database/migrations/2017_05_16_154047_create_io_product.php',

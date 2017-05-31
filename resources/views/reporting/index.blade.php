@@ -95,6 +95,8 @@ Profitability Report Database
 			<div class="col-md-12 col-xs-12 col-sm-12 padding0 warning_div">
 				@if($pr_miss)
 					<p><span class='glyphicon glyphicon-warning-sign'></span>&nbsp;  Parent Placement Lookup Table is incomplete</p>
+				@elseif($deal_miss > 0)
+					<p><span class='glyphicon glyphicon-warning-sign'></span>&nbsp;  Deal rate Lookup Table is incomplete</p>
 				@endif
 				@if($io_miss > 0)
 					<p><span class='glyphicon glyphicon-warning-sign'></span>&nbsp;  Publisher Details Table is incomplete</p>
@@ -113,6 +115,12 @@ Profitability Report Database
 						<p class="col-md-4">Parent Placement</p>
 						<p class="col-md-4 text-center "><a href="{{url('update/PR')}}">Update Onscreen </a></p>
 						<p class="col-md-4 text-right"><a href="{{url('download-excel/PR')}}">Update in Excel</a></p>
+					</div>
+				@elseif($deal_miss > 0)
+					<div class="row">
+						<p class="col-md-4">Deal Rate</p>
+						<p class="col-md-4 text-center "><a href="{{url('update/deal_rate')}}">Update Onscreen </a></p>
+						<p class="col-md-4 text-right"><a href="{{url('download-excel/deal_rate')}}">Update in Excel</a></p>
 					</div>
 				@endif
 				@if($io_miss > 0)
@@ -149,7 +157,7 @@ Profitability Report Database
 		var Platform_names_arr = ['AdTag','Rubicon','AdXTag','AdXDynamic','OpenX','PubMatic','PulsePoint-Dir','PulsePoint-FP','Sovrn','Matomy','MobFox'];
 		var ad_unit = ['728x90','300x250','300x50','320x50','160x600','120x600','300x600','VAST','728x90_1','728x90_2','728x90_3','300x250_1','300x250_2','300x250_3','160x600_LHS','160x600_RHS'];
 		//var table_name = ['Parent Placement','Publisher Details','Country Group','Device Type'];
-		var table_name = [{ id: 'PR', text: 'Parent Placement' }, { id: 'io_product', text: 'Publisher Details' }, { id: 'country', text: 'Country Group' }, { id: 'device', text: 'Device Type' }];
+		var table_name = [{ id: 'PR', text: 'Parent Placement' }, { id: 'io_product', text: 'Publisher Details' }, { id: 'country', text: 'Country Group' }, { id: 'device', text: 'Device Type' },{ id: 'deal_rate', text: 'Deal Rate' }];
 		$(document).ready(function(){
 			$('.platform_sel').select2({
 				placeholder:'Select Platform',

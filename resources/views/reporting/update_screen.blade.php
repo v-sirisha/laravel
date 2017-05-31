@@ -164,6 +164,36 @@ Update Io Product Details
 					<tbody><th class="text-center">YOUR DEVICE TABLE IS UP TO DATE</th></tbody>
 				@endif
 			</table>
+		@elseif($type == 'deal_rate')
+			<table class="table table-bordered" id="device">
+				@if(count($data) > 0)
+					<thead>
+						<tr>
+							<th>Parent Placement Name</th>
+							<th>Device Group</th>
+							<th>Deal Country Group</th>
+							<th>Deal Rate</th>
+						</tr>					
+					</thead>
+					<tbody>					
+						@foreach($data as $key=>$val)
+							<tr id="pr{{$key}}">
+								<form id="form{{$key}}">
+									<input type="hidden" name="type" value="deal_rate">
+									<td><input type="text" name="parent_placement_name" value="{{$val->parent_placement_name}}" readonly></td>
+									<td><input type="text" name="device_group" value="{{$val->device_group}}" readonly></td>
+									<td><input type="text" name="deal_country_group" value="{{$val->deal_country_group}}" readonly></td>
+									<td><input type="text" name="deal_rate" value="{{$val->deal_rate}}" disabled></td>
+									<td class="edit cursorCls" data-id = "{{$key}}"><span class="glyphicon glyphicon-edit"></span>Edit</td>
+								</form>
+							</tr>
+						@endforeach
+						</tr>
+					</tbody>
+				@else
+					<tbody><th class="text-center">YOUR DEVICE TABLE IS UP TO DATE</th></tbody>
+				@endif
+			</table>
 		@endif
 	</div>
 @stop

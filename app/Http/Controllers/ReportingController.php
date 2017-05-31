@@ -20,6 +20,7 @@ use App\Models\io_product;
 use App\Models\tags;
 use App\Models\tag_index;
 use App\Models\pt_raw_data;
+use App\Models\deal_rate;
 
 use App\Http\Requests;
 
@@ -38,10 +39,10 @@ class ReportingController extends Controller
     public function index(){
         $pr_miss = $this->task('PR');
         $io_miss = count($this->task('io_product'));
-        //dd($io_miss);
         $parent_publishers = io_product::distinct()->pluck('parent_publisher');
         $ym_managers = io_product::distinct()->pluck('ym_manager');
         $product_names = pr_table::distinct()->pluck('product_name');
+        $deal_miss = count($this->task('deal_rate'));
         $country = $this->task('country');
         $device = $this->task('device');
         $gen_col = array('id','created_at','updated_at','tag_index_placement','tag','size','device','country','buyer','final_placement_tag','final_placement_name');
@@ -59,7 +60,7 @@ class ReportingController extends Controller
            $col_arr[$value] = $str;
         } 
         $columns = $col_arr;
-        return view('reporting.index',compact('pr_miss','io_miss','parent_publishers','ym_managers','product_names','country','device','columns'));
+        return view('reporting.index',compact('deal_miss','pr_miss','io_miss','parent_publishers','ym_managers','product_names','country','device','columns'));
     }
     public function storedata(pt_request $request,$platform){
 
@@ -308,6 +309,17 @@ class ReportingController extends Controller
                             }
                             
                             break;
+                        case 'deal_rate':
+                            $deal_rate = deal_rate::where('parent_placement_name',$row['parent_placement_name'])
+                                        ->where('deal_country_group',$row['deal_country_group'])
+                                        ->where('device_group',$row['device_group'])->get();
+                            if($deal_rate){
+                                deal_rate::where('parent_placement_name',$row['parent_placement_name'])
+                                        ->where('deal_country_group',$row['deal_country_group'])
+                                        ->where('device_group',$row['device_group'])
+                                        ->update(['parent_placement_name'=>$row['parent_placement_name'],'deal_country_group'=>$row['deal_country_group'],'device_group'=>$row['device_group'],'deal_rate'=>$row['deal_rate']]);
+                            }
+                            break;
                         default:
                         dd('calling');
                             break;
@@ -345,6 +357,9 @@ class ReportingController extends Controller
                             ->leftjoin('tag_index','tag.id','=','tag_index.tag_id')
                             ->leftjoin('PR_table','tag_index.final_placement_name','=','PR_table.tag_index_placement')
                             ->get(['tag.*','tag_index.final_placement_name','PR_table.*']);
+            }
+            else{
+                $this->getDealRate();
             }
             //dd($pr_null_arr);
             return $pr_null_arr;
@@ -390,6 +405,11 @@ class ReportingController extends Controller
             $miss_device = device::where('device_group','=', '')->orWhereNull('device_group')
                         ->get();
             return $miss_device;
+        }
+        else if($table == 'deal_rate'){
+            $deal_miss = deal_rate::where('deal_rate','=','')->orWhereNull('deal_rate')
+                        ->get();
+            return $deal_miss;
         }
     }
     public function download_miss_data_excel($type){
@@ -486,6 +506,24 @@ class ReportingController extends Controller
                     });
                 })->export('xlsx');
                 break;
+            case 'deal_rate':
+                Excel::create('deal rate', function($excel) {
+                    $excel->sheet('Sheet 1',function($sheet){
+                        $miss = $this->task('deal_rate');
+                        foreach ($miss as $key => $value) {
+                            $final[] = array(
+                                $value->parent_placement_name,
+                                $value->device_group,
+                                $value->deal_country_group,
+                                $value->deal_rate
+                            );
+                        }
+                        $sheet->fromArray($final, null, 'A1', false, false);
+                        $headings = array('Parent Placement Name','Device Group','Deal Country Group','Deal Rate');
+                        $sheet->prependRow(1, $headings);
+                    });
+                })->export('xlsx');
+                break;
             default:
                 # code...
                 break;
@@ -571,9 +609,7 @@ class ReportingController extends Controller
         $start_date = Carbon::parse($request->start_date)->format('Y-m-d H:i:00');
         $end_date = Carbon::parse($request->end_date)->format('Y-m-d H:i:00');
         $data = $this->tags->joinindexio()->whereBetween('date',[$start_date,$end_date])->get();
-
         
-
         //dd($data);
         if(isset($request->product_name)){
             $data = $data->where('product_name',$request->product_name);
@@ -654,9 +690,31 @@ class ReportingController extends Controller
                             ->update($data);
                 return $success;
                 break;
+            case 'deal_rate':
+                $data =  $request->except(['type']);
+                $success = deal_rate::where('parent_placement_name',$request->parent_placement_name)
+                            ->where('deal_country_group',$request->deal_country_group)
+                            ->where('device_group',$request->device_group)
+                            ->update($data);
+                return $success;
+                break;
             default:
                 # code...
                 break;
+        }
+    }
+    public function getDealRate(){
+        $final = array();
+        $data = tags::leftjoin('pt_raw_data','tag.id','=','pt_raw_data.tag')
+                ->leftjoin('tag_index','tag.id','=','tag_index.tag_id')
+                ->leftjoin('device','pt_raw_data.device','=','device.id')
+                ->leftjoin('country','pt_raw_data.country','=','country.id')->get(['tag_index.final_placement_name','device.device_group','country.deal_country_group']);
+        foreach ($data as $key => $value) {
+            $success = deal_rate::where('parent_placement_name',$value->parent_placement_name)
+                            ->where('deal_country_group',$value->deal_country_group)
+                            ->where('device_group',$value->device_group)->get();
+            if(!$success)
+            deal_rate::firstOrCreate(['parent_placement_name'=>$value->final_placement_name,'deal_country_group'=>$value->deal_country_group,'device_group'=>$value->device_group,'deal_rate'=>'']);
         }
     }
 }

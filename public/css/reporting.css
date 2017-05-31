@@ -49,3 +49,4 @@ ul.dropdown-menu{background-color: #333333;}
 }
 footer{background: #ccc;padding: 15px 0;}
 footer a{line-height: 2;}
+input[type="file"]{height: auto !important;}

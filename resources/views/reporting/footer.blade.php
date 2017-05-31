@@ -1,4 +1,4 @@
-<div class='container'>
+<div class='container text-center'>
 	<a href="">Rubicon</a>&nbsp;|&nbsp;
 	<a href="">OpenX</a>&nbsp;|&nbsp;
 	<a href="">PubMatic</a>&nbsp;|&nbsp;
@@ -14,7 +14,7 @@
 	<a href="">Matomy Cedato</a>&nbsp;|&nbsp;
 	<a href="">Matomy LKQD</a>&nbsp;|&nbsp;
 	<a href="">Amazon Affiliate</a>&nbsp;|&nbsp;
-	<a href="">Flipkart Affiliate</a>&nbsp;|&nbsp;
+	<a href="">Flipkart Affiliate</a>
 	<a href="">VCommission</a>&nbsp;|&nbsp;
 	<a href="">FreeWheel</a>&nbsp;|&nbsp;
 	<a href="">Tremor</a>&nbsp;|&nbsp;

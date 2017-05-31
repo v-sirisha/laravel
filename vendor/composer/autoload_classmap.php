@@ -9,6 +9,7 @@ return array(
     'CreateCartDetailsTable' => $baseDir . '/database/migrations/2016_11_11_122750_create_cart_details_table.php',
     'CreateCartTable' => $baseDir . '/database/migrations/2016_11_11_122317_create_cart_table.php',
     'CreateCountry' => $baseDir . '/database/migrations/2017_05_16_151921_create_country.php',
+    'CreateDealRate' => $baseDir . '/database/migrations/2017_05_31_114513_create_deal_rate.php',
     'CreateDevice' => $baseDir . '/database/migrations/2017_05_16_152255_create_device.php',
     'CreateGuestTable' => $baseDir . '/database/migrations/2016_11_08_120906_create_guest_table.php',
     'CreateIoProduct' => $baseDir . '/database/migrations/2017_05_16_154047_create_io_product.php',
