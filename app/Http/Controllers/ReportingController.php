@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
 use Lang;
 use Schema;
@@ -62,7 +61,8 @@ class ReportingController extends Controller
         $columns = $col_arr;
         return view('reporting.index',compact('deal_miss','pr_miss','io_miss','parent_publishers','ym_managers','product_names','country','device','columns'));
     }
-    public function storedata(pt_request $request,$platform){
+    public function storedata(Request $request,$platform){
+        //dd($request->all());
 
         $start_date = Carbon::parse($request->start_date)->format('Y-m-d H:i:00');
         $end_date = Carbon::parse($request->end_date)->format('Y-m-d H:i:00');
@@ -78,7 +78,7 @@ class ReportingController extends Controller
         }
         try {
             Excel::load($request->file('excel-file'), function ($reader) use($request){
-
+               // dd('calling');
                 $start_date = Carbon::parse($request->start_date)->format('Y-m-d H:i:00');
                 $end_date = Carbon::parse($request->end_date)->format('Y-m-d H:i:00');
                 //pt_raw_data::leftjoin('tag','tag.id','=','pt_raw_data.tag')->whereBetween('date',[$start_date,$end_date])->where('tag.platform_name',$request->platform_name)->delete();
@@ -203,9 +203,9 @@ class ReportingController extends Controller
                     //dd($raw_data);
                     pt_raw_data::firstOrCreate($raw_data);
                 }
-            });
+            })->setFileName($request->platform_name)->store('xls');;
         } catch (Exception $e) {
-            
+            dd('catch');
         }
         return redirect()->back();
     }
